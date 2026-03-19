@@ -32,6 +32,50 @@ post = instagram_post(
 generate(post)   # → ./output/post.png
 ```
 
+## Cloud Storage & Return Raw Images
+
+Generate images without saving to disk for direct cloud uploads:
+
+```python
+from postcanvas import generate, image_to_bytes, GenerateResult
+from postcanvas.models import OutputFormat
+
+# Get raw PIL Images without saving to disk
+images = generate(post, save=False, return_images=True)
+
+# Convert to bytes for cloud storage
+for img in images:
+    data = image_to_bytes(img, format=OutputFormat.PNG)
+    # s3_client.put_object(Bucket='bucket', Key='image.png', Body=data)
+
+# Or save to custom locations
+from postcanvas import save_image_to_path
+save_image_to_path(images[0], "./custom/path/image.png")
+
+# Get both: save locally AND return images
+result = generate(post, save=True, return_images=True)  # Returns GenerateResult
+print(result.paths)    # List of saved file paths
+print(result.images)   # List of PIL Image objects
+```
+
+### Generate Parameters & Return Types
+
+```python
+generate(
+    post,
+    save=True,              # Save to disk
+    return_images=False     # Return PIL Image objects
+)
+```
+
+**Return types:**
+- `save=True, return_images=False` (default) → `List[str]` (file paths only)
+- `save=False, return_images=True` → `List[Image.Image]` (PIL Images only)
+- `save=True, return_images=True` → `GenerateResult` (consistent dataclass with both)
+
+**Error handling:**
+- `save=False, return_images=False` → raises `ValueError` (must specify at least one output type)
+
 ## Platforms & formats
 
 | Helper | Size |

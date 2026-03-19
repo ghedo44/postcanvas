@@ -1,6 +1,6 @@
 from __future__ import annotations
 import math
-from typing import List, Tuple
+from typing import Tuple
 from PIL import Image
 from .utils import parse_color
 from ..models import GradientConfig
@@ -15,13 +15,14 @@ def _interp(stops, t: float) -> Tuple[int, int, int, int]:
         if a.position <= t <= b.position:
             f = (t - a.position) / (b.position - a.position) if b.position != a.position else 0
             ca, cb = parse_color(a.color), parse_color(b.color)
-            return tuple(int(ca[i] + f * (cb[i] - ca[i])) for i in range(4))
+            return tuple(int(ca[i] + f * (cb[i] - ca[i])) for i in range(4)) # type: ignore
     return parse_color(ss[-1].color)
 
 def create_gradient(w: int, h: int, cfg: GradientConfig) -> Image.Image:
-    import numpy as np
     img = Image.new("RGBA", (w, h))
     px = img.load()
+    if not px:
+        raise RuntimeError("Failed to access image pixels")
 
     if cfg.type == "linear":
         rad = math.radians(cfg.angle)

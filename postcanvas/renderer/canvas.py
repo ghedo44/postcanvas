@@ -1,6 +1,8 @@
 from __future__ import annotations
 import os
-from typing import Optional, List
+from io import BytesIO
+from typing import Optional, List, Union, Literal, overload
+from dataclasses import dataclass
 from PIL import Image
 
 from postcanvas.models.elements import ImageElementConfig, ShapeConfig
@@ -122,42 +124,206 @@ def render_one(post: PostConfig, slide: Optional[CanvasConfig] = None) -> Image.
 
     return canvas
 
-def _save(img: Image.Image, path: str, fmt: OutputFormat, quality: int, dpi: int) -> None:
+def _prepare_image_for_format(img: Image.Image, fmt: OutputFormat) -> Image.Image:
+    """
+    Prepare image for the target format.
+    Converts RGBA to RGB for JPEG (required).
+    """
     if fmt in (OutputFormat.JPEG, OutputFormat.JPG):
-        bg = Image.new("RGB", img.size, (255, 255, 255))
-        bg.paste(img, mask=img.split()[3])
-        bg.save(path, "JPEG", quality=quality, dpi=(dpi, dpi))
+        if img.mode == "RGBA":
+            bg = Image.new("RGB", img.size, (255, 255, 255))
+            bg.paste(img, mask=img.split()[3])
+            return bg
+    return img
+
+
+def _save_image(img: Image.Image, buffer_or_path: Union[BytesIO, str], fmt: OutputFormat, quality: int, dpi: int = 96) -> None:
+    """
+    Generic image save function for both file and buffer output.
+    
+    Args:
+        img: Prepared PIL Image (already converted if needed)
+        buffer_or_path: Either a BytesIO buffer or file path (string)
+        fmt: Output format
+        quality: JPEG/WEBP quality (1-100)
+        dpi: DPI for PNG (unused for JPEG/WEBP in buffer mode)
+    """
+    if fmt in (OutputFormat.JPEG, OutputFormat.JPG):
+        img.save(buffer_or_path, "JPEG", quality=quality, dpi=(dpi, dpi) if isinstance(buffer_or_path, str) else None)
     elif fmt == OutputFormat.WEBP:
-        img.save(path, "WEBP", quality=quality)
-    else:
-        img.save(path, "PNG", dpi=(dpi, dpi))
+        img.save(buffer_or_path, "WEBP", quality=quality)
+    else:  # PNG
+        img.save(buffer_or_path, "PNG", dpi=(dpi, dpi) if isinstance(buffer_or_path, str) else None)
 
-def generate(post: PostConfig) -> List[str]:
-    """
-    Main entry point.  Returns a list of saved file paths.
 
-    Single image  → `post.canvases` is empty  → one file.
-    Carousel      → one file per CanvasConfig  in `post.canvases`.
+def _save(img: Image.Image, path: str, fmt: OutputFormat, quality: int, dpi: int) -> str:
+    """Save image to disk and return the saved file path."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    prepared_img = _prepare_image_for_format(img, fmt)
+    _save_image(prepared_img, path, fmt, quality, dpi)
+    return path
+
+
+@dataclass
+class GenerateResult:
     """
-    os.makedirs(post.output_dir, exist_ok=True)
+    Result container for generate() function with consistent interface.
+    
+    Attributes:
+        images: PIL Image objects generated
+        paths: File paths if save=True, None otherwise
+    """
+    images: List[Image.Image]
+    paths: List[str]
+
+    def __repr__(self) -> str:
+        paths_info = f", {len(self.paths)} files saved" if self.paths else ""
+        return f"GenerateResult({len(self.images)} image(s){paths_info})"
+
+
+# Type overloads for better IDE support
+@overload
+def generate(post: PostConfig, save: Literal[True], return_images: Literal[False] = False) -> List[str]: ...
+
+@overload
+def generate(post: PostConfig, save: Literal[False], return_images: Literal[True]) -> List[Image.Image]: ...
+
+@overload
+def generate(post: PostConfig, save: Literal[True], return_images: Literal[True]) -> GenerateResult: ...
+
+@overload
+def generate(post: PostConfig, save: bool = True, return_images: bool = False) -> Union[List[str], List[Image.Image], GenerateResult]: ...
+
+
+def generate(
+    post: PostConfig,
+    save: bool = True,
+    return_images: bool = False,
+) -> Union[List[str], List[Image.Image], GenerateResult]:
+    """
+    Generate post image(s) with flexible output options.
+
+    Args:
+        post: PostConfig object with layout and content configuration
+        save: If True, save images to disk (default: True)
+        return_images: If True, return PIL Image objects (default: False)
+
+    Returns:
+        Return type depends on parameters:
+        - save=True, return_images=False (default): List[str] - file paths only
+        - save=False, return_images=True: List[Image.Image] - images only
+        - save=True, return_images=True: GenerateResult - both paths and images
+
+    Raises:
+        ValueError: If save=False and return_images=False (nothing to return)
+
+    Examples:
+        # Default: save to disk, return file paths (backward compatible)
+        paths = generate(post)
+        assert isinstance(paths, list) and isinstance(paths[0], str)
+
+        # Return raw images only (no disk I/O)
+        images = generate(post, save=False, return_images=True)
+        assert isinstance(images, list) and isinstance(images[0], Image.Image)
+
+        # Get both: save to disk AND return images
+        result = generate(post, save=True, return_images=True)
+        assert isinstance(result, GenerateResult)
+        assert result.paths and result.images
+    """
+    if not save and not return_images:
+        raise ValueError("Must specify at least one of: save=True or return_images=True")
+
+    if save:
+        os.makedirs(post.output_dir, exist_ok=True)
+
     ext = post.output_format.value.lower()
     paths: List[str] = []
+    images_list: List[Image.Image] = []
 
-    if not post.canvases:
-        canvas = render_one(post)
-        fname  = f"{post.output_filename}.{ext}"
-        fpath  = os.path.join(post.output_dir, fname)
-        _save(canvas, fpath, post.output_format, post.quality, post.dpi)
-        print(f"✅  {fpath}")
-        paths.append(fpath)
+    # Render single image or carousel
+    slides_to_render = [(None, None)] if not post.canvases else [
+        (i, slide) for i, slide in enumerate(post.canvases)
+    ]
+
+    for idx, (i, slide) in enumerate(slides_to_render):
+        canvas = render_one(post, slide)
+        images_list.append(canvas)
+
+        if save:
+            # Determine output filename
+            if slide and slide.output_filename:
+                name = slide.output_filename
+            elif i is not None:
+                name = f"{post.output_filename}_{i+1:02d}"
+            else:
+                name = post.output_filename
+
+            fname = f"{name}.{ext}"
+            fpath = os.path.join(post.output_dir, fname)
+
+            # Save the image
+            saved_path = _save(canvas, fpath, post.output_format, post.quality, post.dpi)
+            paths.append(saved_path)
+
+            # Print progress
+            if post.canvases:
+                print(f"✅  {fpath}  ({idx+1}/{len(post.canvases)})")
+            else:
+                print(f"✅  {fpath}")
+
+    # Return based on configuration
+    if save and return_images:
+        return GenerateResult(images=images_list, paths=paths)
+    elif return_images:
+        return images_list
     else:
-        for i, slide in enumerate(post.canvases):
-            canvas = render_one(post, slide)
-            name   = slide.output_filename or f"{post.output_filename}_{i+1:02d}"
-            fname  = f"{name}.{ext}"
-            fpath  = os.path.join(post.output_dir, fname)
-            _save(canvas, fpath, post.output_format, post.quality, post.dpi)
-            print(f"✅  {fpath}  ({i+1}/{len(post.canvases)})")
-            paths.append(fpath)
+        return paths
 
-    return paths
+
+def image_to_bytes(img: Image.Image, format: OutputFormat = OutputFormat.PNG, quality: int = 95) -> bytes:
+    """
+    Convert a PIL Image to bytes for storage/upload to cloud.
+
+    Args:
+        img: PIL Image object
+        format: Output format (PNG, JPEG, WEBP)
+        quality: JPEG/WEBP quality (1-100)
+
+    Returns:
+        Image data as bytes
+
+    Example:
+        images = generate(post, save=False, return_images=True)
+        for i, img in enumerate(images):
+            data = image_to_bytes(img, format=OutputFormat.PNG)
+            s3_client.put_object(Bucket='my-bucket', Key=f'image_{i}.png', Body=data)
+    """
+    buffer = BytesIO()
+    prepared_img = _prepare_image_for_format(img, format)
+    _save_image(prepared_img, buffer, format, quality)
+    return buffer.getvalue()
+
+
+def save_image_to_path(img: Image.Image, path: str, format: OutputFormat = OutputFormat.PNG, quality: int = 95) -> str:
+    """
+    Save a PIL Image to a specific path.
+
+    Args:
+        img: PIL Image object
+        path: File path to save to
+        format: Output format (PNG, JPEG, WEBP)
+        quality: JPEG/WEBP quality (1-100)
+
+    Returns:
+        The saved file path
+
+    Example:
+        images = generate(post, save=False, return_images=True)
+        for i, img in enumerate(images):
+            save_image_to_path(img, f"./custom_output/image_{i}.png")
+    """
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    prepared_img = _prepare_image_for_format(img, format)
+    _save_image(prepared_img, path, format, quality)
+    return path
