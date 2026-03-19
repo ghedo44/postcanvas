@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name            = "postcanvas"
-version         = "0.1.0"
+version         = "0.1.1"
 description     = "Generate pixel-perfect social media images from Python Pydantic models"
 readme          = "README.md"
 license         = { text = "MIT" }
