@@ -1,0 +1,148 @@
+# postcanvas 🎨
+
+> Generate pixel-perfect social-media images from Python — just describe what you want.
+
+## Install
+
+```bash
+pip install postcanvas
+```
+
+## Quick start
+
+```python
+from postcanvas import generate
+from postcanvas.presets import instagram_post
+from postcanvas.models import BackgroundConfig, TextConfig, ShadowConfig
+
+post = instagram_post(
+    background=BackgroundConfig(color="#1a1a2e"),
+    texts=[
+        TextConfig(
+            content="Hello World!",
+            y="50%",
+            font_size=96,
+            color="#e94560",
+            shadow=ShadowConfig(blur_radius=12),
+        )
+    ],
+    output_dir="./output",
+)
+
+generate(post)   # → ./output/post.png
+```
+
+## Platforms & formats
+
+| Helper | Size |
+|---|---|
+| `instagram_post()` | 1080 × 1080 |
+| `instagram_portrait()` | 1080 × 1350 |
+| `instagram_story()` | 1080 × 1920 |
+| `x_post()` | 1600 × 900 |
+| `reddit_post()` | 1920 × 1080 |
+| `blog_og()` | 1200 × 628 |
+| `linkedin_post()` | 1080 × 1080 |
+| `youtube_thumbnail()` | 1280 × 720 |
+| `facebook_post()` | 1080 × 1080 |
+| `tiktok_story()` | 1080 × 1920 |
+
+Use `preset(Platform.CUSTOM, PostFormat.CUSTOM, width=800, height=600)` for custom sizes.
+
+## Carousel / multi-image
+
+```python
+from postcanvas.models import CanvasConfig, BackgroundConfig
+
+post = instagram_post(
+    canvases=[
+        CanvasConfig(background=BackgroundConfig(color="#e94560"),
+                     texts=[TextConfig(content="Slide 1", ...)]),
+        CanvasConfig(background=BackgroundConfig(color="#0f3460"),
+                     texts=[TextConfig(content="Slide 2", ...)]),
+    ]
+)
+```
+
+## Key model reference
+
+### `PostConfig` (root)
+| Field | Type | Description |
+|---|---|---|
+| `platform` | `Platform` | Target platform |
+| `width` / `height` | `int` | Canvas size in px |
+| `background` | `BackgroundConfig` | Global background |
+| `padding` | `PaddingConfig` | Safe-area insets |
+| `texts` | `List[TextConfig]` | Global text elements |
+| `images` | `List[ImageElementConfig]` | Global image elements |
+| `shapes` | `List[ShapeConfig]` | Global shapes |
+| `canvases` | `List[CanvasConfig]` | Slides (carousel) |
+| `watermark` | `WatermarkConfig` | Applied to every slide |
+| `output_dir` | `str` | Where to save files |
+| `output_format` | `OutputFormat` | `png` / `jpeg` / `webp` |
+
+### Positioning
+Every `x`, `y`, `width`, `height` accepts:
+- **Absolute pixels**: `540`, `200`
+- **Relative string**: `"50%"`, `"80%"`
+
+### Anchors
+`anchor` can be: `topleft`, `topcenter`, `topright`, `left`, `center`,
+`right`, `bottomleft`, `bottomcenter`, `bottomright`
+
+### z_index
+Elements are composited in ascending `z_index` order across all types
+(shapes, images, texts).  Default values: shapes=1, images=5, texts=10.
+
+### Text inside images and shapes
+Both `ImageElementConfig` and `ShapeConfig` now support a `texts` list:
+
+```python
+from postcanvas.models import ImageElementConfig, ShapeConfig, ShapeType, TextConfig
+
+ShapeConfig(
+    type=ShapeType.ROUNDED_RECTANGLE,
+    x="50%", y="35%", width="70%", height="30%", anchor="center",
+    fill_color="#1f3b4d",
+    texts=[
+        TextConfig(content="Inside Shape", x="50%", y="50%", anchor="center")
+    ],
+)
+
+ImageElementConfig(
+    src="assets/photo.jpg",
+    x="50%", y="70%", width="60%", height="35%", anchor="center",
+    texts=[
+        TextConfig(content="Inside Image", x="50%", y="88%", anchor="bottomcenter")
+    ],
+)
+```
+
+Nested text coordinates are resolved relative to the element's own box, not the full canvas.
+
+### Font inheritance (Post > Canvas > Text override)
+You can define default text font at post level, override it per canvas, and still override per text:
+
+```python
+from postcanvas.presets import instagram_post
+from postcanvas.models import CanvasConfig, TextConfig
+
+post = instagram_post(
+    text_font_path="Roboto/static/Roboto-Regular.ttf",   # default for whole post
+    texts=[
+        TextConfig(content="Uses post default", x="50%", y="15%"),
+        TextConfig(content="Custom text font", x="50%", y="25%", font_path="Roboto/static/Roboto-Bold.ttf"),
+    ],
+    canvases=[
+        CanvasConfig(
+            text_font_path="Roboto/static/Roboto-Italic.ttf",  # overrides post default on this slide
+            texts=[
+                TextConfig(content="Uses canvas override", x="50%", y="50%"),
+                TextConfig(content="Text-level still wins", x="50%", y="60%", font_path="Roboto/static/Roboto-Medium.ttf"),
+            ],
+        )
+    ],
+)
+```
+
+Precedence: `TextConfig` > `CanvasConfig` > `PostConfig` > internal Arial fallback.
