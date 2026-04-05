@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 from typing import Optional
 from PIL import Image
 from ..models import ImageFit
@@ -23,15 +22,15 @@ def load_image(src: str) -> Optional[Image.Image]:
 
 def fit_image(img: Image.Image, w: int, h: int, fit: ImageFit) -> Image.Image:
     if fit == ImageFit.FILL:
-        return img.resize((w, h), Image.LANCZOS)
+        return img.resize((w, h), Image.Resampling.LANCZOS)
     ir, tr = img.width / img.height, w / h
     if fit == ImageFit.COVER:
         nw, nh = (w, int(w / ir)) if ir < tr else (int(h * ir), h)
-        img = img.resize((nw, nh), Image.LANCZOS)
+        img = img.resize((nw, nh), Image.Resampling.LANCZOS)
         l, t = (img.width - w) // 2, (img.height - h) // 2
         return img.crop((l, t, l + w, t + h))
     if fit == ImageFit.CONTAIN:
         nw, nh = (w, int(w / ir)) if ir > tr else (int(h * ir), h)
-        return img.resize((nw, nh), Image.LANCZOS)
+        return img.resize((nw, nh), Image.Resampling.LANCZOS)
     # CENTER
-    return img.resize((min(img.width, w), min(img.height, h)), Image.LANCZOS)
+    return img.resize((min(img.width, w), min(img.height, h)), Image.Resampling.LANCZOS)
