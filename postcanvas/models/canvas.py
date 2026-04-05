@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from .background import BackgroundConfig
 from .text import TextConfig
-from .elements import ImageElementConfig, ShapeConfig
+from .elements import ImageElementConfig, ShapeConfig, TableElementConfig, ChartElementConfig
 from .watermark import WatermarkConfig
 from .meta import MetaConfig
 from .primitives import PaddingConfig, FilterConfig
@@ -13,7 +13,7 @@ class CanvasConfig(BaseModel):
     One slide / frame in a carousel (or the only frame for a single image).
 
     Every field is optional – unset fields fall back to the parent PostConfig.
-    Elements (texts, images, shapes) are MERGED with the parent's by default;
+    Elements (texts, images, shapes, tables, charts) are MERGED with the parent's by default;
     set replace_elements=True to use ONLY the elements defined here.
     """
 
@@ -33,6 +33,8 @@ class CanvasConfig(BaseModel):
     texts:  List[TextConfig]         = Field(default_factory=list)
     images: List[ImageElementConfig] = Field(default_factory=list)
     shapes: List[ShapeConfig]        = Field(default_factory=list)
+    tables: List[TableElementConfig] = Field(default_factory=list)
+    charts: List[ChartElementConfig] = Field(default_factory=list)
 
     # If True, these elements replace (not extend) the parent's element lists
     replace_elements: bool = False

@@ -58,6 +58,10 @@ class ShapeType(str, Enum):
     POLYGON           = "polygon"
     STAR              = "star"
 
+class ChartType(str, Enum):
+    BAR  = "bar"
+    LINE = "line"
+
 class BlendMode(str, Enum):
     NORMAL     = "normal"
     MULTIPLY   = "multiply"

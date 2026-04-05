@@ -120,6 +120,8 @@ post = instagram_post(
 | `texts` | `List[TextConfig]` | Global text elements |
 | `images` | `List[ImageElementConfig]` | Global image elements |
 | `shapes` | `List[ShapeConfig]` | Global shapes |
+| `tables` | `List[TableElementConfig]` | Global table elements |
+| `charts` | `List[ChartElementConfig]` | Global chart elements |
 | `canvases` | `List[CanvasConfig]` | Slides (carousel) |
 | `watermark` | `WatermarkConfig` | Applied to every slide |
 | `output_dir` | `str` | Where to save files |
@@ -136,7 +138,44 @@ Every `x`, `y`, `width`, `height` accepts:
 
 ### z_index
 Elements are composited in ascending `z_index` order across all types
-(shapes, images, texts).  Default values: shapes=1, images=5, texts=10.
+(shapes, images, tables, charts, texts).
+Default values: shapes=1, images=5, tables=6, charts=7, texts=10.
+
+### Tables and charts
+
+```python
+from postcanvas.models import (
+    TableElementConfig,
+    ChartElementConfig,
+    ChartSeriesConfig,
+    ChartType,
+)
+
+tables = [
+    TableElementConfig(
+        headers=["Metric", "Jan", "Feb", "Mar"],
+        rows=[
+            ["Reach", "28K", "31K", "37K"],
+            ["Saves", "940", "1106", "1483"],
+        ],
+        x="50%", y="56%", width="88%", height="52%", anchor="center",
+    )
+]
+
+charts = [
+    ChartElementConfig(
+        type=ChartType.BAR,
+        labels=["Reels", "Carousel", "Static"],
+        series=[
+            ChartSeriesConfig(name="Current", values=[8.9, 7.2, 4.1]),
+            ChartSeriesConfig(name="Previous", values=[6.2, 5.8, 3.4]),
+        ],
+        x="50%", y="56%", width="90%", height="60%", anchor="center",
+    )
+]
+```
+
+Supported chart types: `ChartType.BAR` and `ChartType.LINE`.
 
 ### Text inside images and shapes
 Both `ImageElementConfig` and `ShapeConfig` now support a `texts` list:

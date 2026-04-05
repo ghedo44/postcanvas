@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from .enums import Platform, PostFormat, OutputFormat
 from .background import BackgroundConfig
 from .text import TextConfig
-from .elements import ImageElementConfig, ShapeConfig
+from .elements import ImageElementConfig, ShapeConfig, TableElementConfig, ChartElementConfig
 from .watermark import WatermarkConfig
 from .meta import MetaConfig
 from .primitives import PaddingConfig, FilterConfig
@@ -39,10 +39,12 @@ class PostConfig(BaseModel):
     text_font_family: Optional[str] = None
     text_font_path:   Optional[str] = None
 
-    # ── Global elements (appear on EVERY slide unless overridden) ─────────────
+    # ── Global elements (appear on EVERY slide unless overridden) ────────────
     texts:  List[TextConfig]         = Field(default_factory=list)
     images: List[ImageElementConfig] = Field(default_factory=list)
     shapes: List[ShapeConfig]        = Field(default_factory=list)
+    tables: List[TableElementConfig] = Field(default_factory=list)
+    charts: List[ChartElementConfig] = Field(default_factory=list)
 
     # ── Slides (carousel / multi-image) ──────────────────────────────────────
     canvases: List[CanvasConfig] = Field(default_factory=list)

@@ -5,11 +5,18 @@ from typing import Optional, List, Union, Literal, overload
 from dataclasses import dataclass
 from PIL import Image
 
-from postcanvas.models.elements import ImageElementConfig, ShapeConfig
+from postcanvas.models.elements import (
+    ImageElementConfig,
+    ShapeConfig,
+    TableElementConfig,
+    ChartElementConfig,
+)
 from .background import render_background
 from .text import render_text
 from .shapes import render_shape
 from .images import render_image_element
+from .tables import render_table
+from .charts import render_chart
 from .filters import apply_filter
 from ..models import PostConfig, CanvasConfig, TextConfig, PaddingConfig, WatermarkConfig, OutputFormat
 
@@ -71,14 +78,20 @@ def render_one(post: PostConfig, slide: Optional[CanvasConfig] = None) -> Image.
         shapes = slide.shapes
         images = slide.images
         texts = slide.texts
+        tables = slide.tables
+        charts = slide.charts
     else:
         shapes = list(post.shapes) + (slide.shapes if slide else [])
         images = list(post.images) + (slide.images if slide else [])
         texts  = list(post.texts)  + (slide.texts  if slide else [])
+        tables = list(post.tables) + (slide.tables if slide else [])
+        charts = list(post.charts) + (slide.charts if slide else [])
 
     all_elements = (
         [el for el in shapes] +
         [el for el in images] +
+        [el for el in tables] +
+        [el for el in charts] +
         [el for el in texts]
     )
     all_elements.sort(key=lambda e: getattr(e, "z_index", 0))
@@ -95,6 +108,24 @@ def render_one(post: PostConfig, slide: Optional[CanvasConfig] = None) -> Image.
             )
         elif isinstance(el, ImageElementConfig):
             canvas = render_image_element(
+                canvas,
+                el,
+                w,
+                h,
+                default_font_family=default_font_family,
+                default_font_path=default_font_path,
+            )
+        elif isinstance(el, TableElementConfig):
+            canvas = render_table(
+                canvas,
+                el,
+                w,
+                h,
+                default_font_family=default_font_family,
+                default_font_path=default_font_path,
+            )
+        elif isinstance(el, ChartElementConfig):
+            canvas = render_chart(
                 canvas,
                 el,
                 w,
