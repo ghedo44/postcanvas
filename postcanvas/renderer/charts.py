@@ -1,61 +1,9 @@
 from __future__ import annotations
-import os
 from typing import Any, Optional
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 from .utils import parse_color, resolve, get_anchor_offset
+from .fonts import resolve_font
 from ..models import ChartElementConfig, ChartType
-
-_FONT_DIRS = [
-    "/usr/share/fonts", "/usr/local/share/fonts",
-    "/System/Library/Fonts", "/Library/Fonts",
-    "C:/Windows/Fonts",
-    os.path.expanduser("~/Library/Fonts"),
-]
-_FONT_MAP = {
-    "arial": ["Arial.ttf", "arial.ttf", "LiberationSans-Regular.ttf", "DejaVuSans.ttf"],
-    "helvetica": ["Helvetica.ttf", "helvetica.ttf", "LiberationSans-Regular.ttf"],
-    "times": ["Times New Roman.ttf", "times.ttf", "LiberationSerif-Regular.ttf", "DejaVuSerif.ttf"],
-    "courier": ["Courier New.ttf", "cour.ttf", "LiberationMono-Regular.ttf", "DejaVuSansMono.ttf"],
-    "roboto": ["Roboto-Regular.ttf", "Roboto.ttf"],
-    "open sans": ["OpenSans-Regular.ttf"],
-    "inter": ["Inter-Regular.ttf", "Inter.ttf"],
-}
-
-
-def _find_font(name: Optional[str], size: int) -> Any:
-    if not name:
-        name = "Arial"
-    candidates = _FONT_MAP.get(name.lower(), [name + ".ttf", name + "-Regular.ttf"])
-    for font_dir in _FONT_DIRS:
-        if not os.path.isdir(font_dir):
-            continue
-        for candidate in candidates:
-            p = os.path.join(font_dir, candidate)
-            if os.path.isfile(p):
-                try:
-                    return ImageFont.truetype(p, size)
-                except Exception:
-                    pass
-            for sub in os.listdir(font_dir):
-                p2 = os.path.join(font_dir, sub, candidate)
-                if os.path.isfile(p2):
-                    try:
-                        return ImageFont.truetype(p2, size)
-                    except Exception:
-                        pass
-    try:
-        return ImageFont.load_default(size=size)
-    except Exception:
-        return ImageFont.load_default()
-
-
-def _resolve_font(path: Optional[str], family: Optional[str], size: int) -> Any:
-    if path:
-        try:
-            return ImageFont.truetype(path, size)
-        except Exception:
-            pass
-    return _find_font(family, size)
 
 
 def _truncate_text(draw: ImageDraw.ImageDraw, text: str, font: Any, max_width: int) -> str:
@@ -183,9 +131,9 @@ def render_chart(
 
     base_font_path = cfg.font_path if cfg.font_path is not None else default_font_path
     base_font_family = cfg.font_family if cfg.font_family is not None else default_font_family
-    label_font = _resolve_font(base_font_path, base_font_family, cfg.font_size)
-    title_font = _resolve_font(base_font_path, base_font_family, cfg.title_font_size)
-    legend_font = _resolve_font(base_font_path, base_font_family, max(12, cfg.font_size - 1))
+    label_font = resolve_font(base_font_path, base_font_family, cfg.font_size)
+    title_font = resolve_font(base_font_path, base_font_family, cfg.title_font_size)
+    legend_font = resolve_font(base_font_path, base_font_family, max(12, cfg.font_size - 1))
 
     label_color = parse_color(cfg.label_color)
     title_color = parse_color(cfg.title_color)

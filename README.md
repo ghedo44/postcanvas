@@ -8,6 +8,14 @@
 pip install postcanvas
 ```
 
+## Documentation
+
+- docs/README.md
+- docs/getting-started.md
+- docs/config-reference.md
+- docs/renderer-architecture.md
+- docs/examples.md
+
 ## Quick start
 
 ```python

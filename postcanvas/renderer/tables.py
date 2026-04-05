@@ -1,61 +1,9 @@
 from __future__ import annotations
-import os
 from typing import Any, Optional
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 from .utils import parse_color, resolve, get_anchor_offset
+from .fonts import resolve_font
 from ..models import TableElementConfig, TextAlign
-
-_FONT_DIRS = [
-    "/usr/share/fonts", "/usr/local/share/fonts",
-    "/System/Library/Fonts", "/Library/Fonts",
-    "C:/Windows/Fonts",
-    os.path.expanduser("~/Library/Fonts"),
-]
-_FONT_MAP = {
-    "arial": ["Arial.ttf", "arial.ttf", "LiberationSans-Regular.ttf", "DejaVuSans.ttf"],
-    "helvetica": ["Helvetica.ttf", "helvetica.ttf", "LiberationSans-Regular.ttf"],
-    "times": ["Times New Roman.ttf", "times.ttf", "LiberationSerif-Regular.ttf", "DejaVuSerif.ttf"],
-    "courier": ["Courier New.ttf", "cour.ttf", "LiberationMono-Regular.ttf", "DejaVuSansMono.ttf"],
-    "roboto": ["Roboto-Regular.ttf", "Roboto.ttf"],
-    "open sans": ["OpenSans-Regular.ttf"],
-    "inter": ["Inter-Regular.ttf", "Inter.ttf"],
-}
-
-
-def _find_font(name: Optional[str], size: int) -> Any:
-    if not name:
-        name = "Arial"
-    candidates = _FONT_MAP.get(name.lower(), [name + ".ttf", name + "-Regular.ttf"])
-    for font_dir in _FONT_DIRS:
-        if not os.path.isdir(font_dir):
-            continue
-        for candidate in candidates:
-            p = os.path.join(font_dir, candidate)
-            if os.path.isfile(p):
-                try:
-                    return ImageFont.truetype(p, size)
-                except Exception:
-                    pass
-            for sub in os.listdir(font_dir):
-                p2 = os.path.join(font_dir, sub, candidate)
-                if os.path.isfile(p2):
-                    try:
-                        return ImageFont.truetype(p2, size)
-                    except Exception:
-                        pass
-    try:
-        return ImageFont.load_default(size=size)
-    except Exception:
-        return ImageFont.load_default()
-
-
-def _resolve_font(path: Optional[str], family: Optional[str], size: int) -> Any:
-    if path:
-        try:
-            return ImageFont.truetype(path, size)
-        except Exception:
-            pass
-    return _find_font(family, size)
 
 
 def _truncate_text(draw: ImageDraw.ImageDraw, text: str, font: Any, max_width: int) -> str:
@@ -171,11 +119,18 @@ def render_table(
 
     border_radius = int(cfg.border_radius) if cfg.border_radius > 1 else int(cfg.border_radius * min(w, h))
 
-    bg = parse_color(cfg.background_color)
+    clip_mask = Image.new("L", (w, h), 0)
+    clip_draw = ImageDraw.Draw(clip_mask)
     if border_radius > 0:
-        draw.rounded_rectangle([0, 0, w - 1, h - 1], radius=border_radius, fill=bg)
+        clip_draw.rounded_rectangle([0, 0, w - 1, h - 1], radius=border_radius, fill=255)
     else:
-        draw.rectangle([0, 0, w - 1, h - 1], fill=bg)
+        clip_draw.rectangle([0, 0, w - 1, h - 1], fill=255)
+
+    fills = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    fill_draw = ImageDraw.Draw(fills)
+
+    bg = parse_color(cfg.background_color)
+    fill_draw.rectangle([0, 0, w - 1, h - 1], fill=bg)
 
     x_edges = [0]
     acc = 0.0
@@ -186,7 +141,7 @@ def render_table(
 
     if has_header:
         header_bg = parse_color(cfg.header_background_color)
-        draw.rectangle([0, 0, w, min(h, header_h)], fill=header_bg)
+        fill_draw.rectangle([0, 0, w - 1, min(h - 1, header_h)], fill=header_bg)
 
     row_colors = cfg.row_background_colors or []
     row_start_y = header_h
@@ -197,12 +152,17 @@ def render_table(
         y1 = min(h, y0 + row_h)
         if row_colors:
             color = parse_color(row_colors[i % len(row_colors)])
-            draw.rectangle([0, y0, w, y1], fill=color)
+            fill_draw.rectangle([0, y0, w - 1, max(y0, y1 - 1)], fill=color)
+
+    fills_alpha = ImageChops.multiply(fills.split()[3], clip_mask)
+    fills.putalpha(fills_alpha)
+    layer = Image.alpha_composite(layer, fills)
+    draw = ImageDraw.Draw(layer)
 
     base_font_path = cfg.font_path if cfg.font_path is not None else default_font_path
     base_font_family = cfg.font_family if cfg.font_family is not None else default_font_family
-    cell_font = _resolve_font(base_font_path, base_font_family, cfg.font_size)
-    header_font = _resolve_font(
+    cell_font = resolve_font(base_font_path, base_font_family, cfg.font_size)
+    header_font = resolve_font(
         base_font_path,
         base_font_family,
         cfg.header_font_size or max(cfg.font_size + 2, cfg.font_size),
@@ -242,19 +202,26 @@ def render_table(
             )
 
     if cfg.grid_width > 0:
+        grid_layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        grid_draw = ImageDraw.Draw(grid_layer)
         grid = parse_color(cfg.grid_color)
         for x_edge in x_edges[1:-1]:
-            draw.line([(x_edge, 0), (x_edge, h)], fill=grid, width=cfg.grid_width)
+            grid_draw.line([(x_edge, 0), (x_edge, h)], fill=grid, width=cfg.grid_width)
 
         if has_header:
-            draw.line([(0, header_h), (w, header_h)], fill=grid, width=cfg.grid_width)
+            grid_draw.line([(0, header_h), (w, header_h)], fill=grid, width=cfg.grid_width)
 
         if rows:
             for i in range(1, len(rows)):
                 y_edge = row_start_y + i * row_h
                 if y_edge >= h:
                     break
-                draw.line([(0, y_edge), (w, y_edge)], fill=grid, width=cfg.grid_width)
+                grid_draw.line([(0, y_edge), (w, y_edge)], fill=grid, width=cfg.grid_width)
+
+        grid_alpha = ImageChops.multiply(grid_layer.split()[3], clip_mask)
+        grid_layer.putalpha(grid_alpha)
+        layer = Image.alpha_composite(layer, grid_layer)
+        draw = ImageDraw.Draw(layer)
 
     if cfg.border_width > 0:
         border = parse_color(cfg.border_color)

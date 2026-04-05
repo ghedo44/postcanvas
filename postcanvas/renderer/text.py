@@ -1,59 +1,12 @@
 from __future__ import annotations
-import os
 from typing import Any, List, Optional
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 from .utils import parse_color, resolve, get_anchor_offset
+from .fonts import resolve_font
 from ..models import TextConfig, PaddingConfig, TextAlign, TextTransform
 
-_FONT_DIRS = [
-    "/usr/share/fonts", "/usr/local/share/fonts",
-    "/System/Library/Fonts", "/Library/Fonts",
-    "C:/Windows/Fonts",
-    os.path.expanduser("~/Library/Fonts"),
-]
-_FONT_MAP = {
-    "arial":        ["Arial.ttf", "arial.ttf", "LiberationSans-Regular.ttf", "DejaVuSans.ttf"],
-    "helvetica":    ["Helvetica.ttf", "helvetica.ttf", "LiberationSans-Regular.ttf"],
-    "times":        ["Times New Roman.ttf", "times.ttf", "LiberationSerif-Regular.ttf", "DejaVuSerif.ttf"],
-    "courier":      ["Courier New.ttf", "cour.ttf", "LiberationMono-Regular.ttf", "DejaVuSansMono.ttf"],
-    "roboto":       ["Roboto-Regular.ttf", "Roboto.ttf"],
-    "open sans":    ["OpenSans-Regular.ttf"],
-    "inter":        ["Inter-Regular.ttf", "Inter.ttf"],
-}
-
-def _find_font(name: Optional[str], size: int) -> Any:
-    if not name:
-        name = "Arial"
-    candidates = _FONT_MAP.get(name.lower(), [name + ".ttf", name + "-Regular.ttf"])
-    for font_dir in _FONT_DIRS:
-        if not os.path.isdir(font_dir):
-            continue
-        for c in candidates:
-            p = os.path.join(font_dir, c)
-            if os.path.isfile(p):
-                try:
-                    return ImageFont.truetype(p, size)
-                except Exception:
-                    pass
-            for sub in os.listdir(font_dir):
-                p2 = os.path.join(font_dir, sub, c)
-                if os.path.isfile(p2):
-                    try:
-                        return ImageFont.truetype(p2, size)
-                    except Exception:
-                        pass
-    try:
-        return ImageFont.load_default(size=size)
-    except Exception:
-        return ImageFont.load_default()
-
 def _get_font(cfg: TextConfig) -> Any:
-    if cfg.font_path:
-        try:
-            return ImageFont.truetype(cfg.font_path, cfg.font_size)
-        except Exception:
-            pass
-    return _find_font(cfg.font_family, cfg.font_size)
+    return resolve_font(cfg.font_path, cfg.font_family, cfg.font_size)
 
 def _adaptive_line_layer(
     cfg: TextConfig,
