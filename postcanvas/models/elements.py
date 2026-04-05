@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import List, Optional, Tuple
-from pydantic import BaseModel, Field
+from typing import List, Optional, Tuple, Literal
+from pydantic import BaseModel, Field, model_validator
 from .enums import ImageFit, BlendMode, ShapeType, ChartType, TextAlign, Dimension
 from .primitives import ShadowConfig, BorderConfig, FilterConfig, GradientConfig
 from .text import TextConfig
@@ -73,6 +73,20 @@ class ShapeConfig(BaseModel):
     shadow:     Optional[ShadowConfig] = None
     texts:      List[TextConfig]       = Field(default_factory=list)
 
+class TableCellAlignmentConfig(BaseModel):
+    """Targeted alignment override for a single table cell."""
+
+    section: Literal["body", "header"] = "body"
+    row: int = Field(default=0, ge=0)
+    col: int = Field(ge=0)
+    align: TextAlign
+
+    @model_validator(mode="after")
+    def _validate_header_row(self) -> "TableCellAlignmentConfig":
+        if self.section == "header" and self.row != 0:
+            raise ValueError("Header cell alignment overrides must use row=0.")
+        return self
+
 class TableElementConfig(BaseModel):
     # Data
     headers: List[str] = Field(default_factory=list)
@@ -91,8 +105,11 @@ class TableElementConfig(BaseModel):
     font_path:        Optional[str] = None
     font_size:        int           = 24
     header_font_size: Optional[int] = None
+    text_align:       Optional[TextAlign] = None
     cell_align:       TextAlign     = TextAlign.LEFT
     header_align:     TextAlign     = TextAlign.CENTER
+    column_alignments: Optional[List[TextAlign]] = None
+    cell_alignments: List[TableCellAlignmentConfig] = Field(default_factory=list)
 
     # Colors and framing
     text_color:              str = "#0f172a"
@@ -122,6 +139,33 @@ class TableElementConfig(BaseModel):
     z_index:    int       = 6
     visible:    bool      = True
     shadow:     Optional[ShadowConfig] = None
+
+    @model_validator(mode="after")
+    def _validate_alignment_overrides(self) -> "TableElementConfig":
+        col_count = max(len(self.headers), max((len(r) for r in self.rows), default=0))
+        body_row_count = len(self.rows)
+
+        if self.column_alignments is not None:
+            if col_count == 0:
+                raise ValueError("column_alignments cannot be used when no columns are defined.")
+            if len(self.column_alignments) != col_count:
+                raise ValueError(
+                    f"column_alignments must contain exactly {col_count} values; got {len(self.column_alignments)}."
+                )
+
+        for override in self.cell_alignments:
+            if col_count == 0:
+                raise ValueError("cell_alignments cannot be used when no columns are defined.")
+            if override.col >= col_count:
+                raise ValueError(
+                    f"cell_alignments contains col={override.col}, but the table has {col_count} columns."
+                )
+            if override.section == "body" and override.row >= body_row_count:
+                raise ValueError(
+                    f"cell_alignments contains body row={override.row}, but the table has {body_row_count} body rows."
+                )
+
+        return self
 
 class ChartSeriesConfig(BaseModel):
     name:   Optional[str] = None

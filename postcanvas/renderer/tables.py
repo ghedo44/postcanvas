@@ -70,6 +70,32 @@ def _normalize_column_widths(column_widths: Optional[list[float]], col_count: in
     return [1.0 / col_count] * col_count
 
 
+def _build_cell_alignment_map(cfg: TableElementConfig) -> dict[tuple[str, int, int], TextAlign]:
+    mapping: dict[tuple[str, int, int], TextAlign] = {}
+    for override in cfg.cell_alignments:
+        key = (override.section, override.row, override.col)
+        mapping[key] = override.align
+    return mapping
+
+
+def _resolve_alignment(
+    cfg: TableElementConfig,
+    section: str,
+    row: int,
+    col: int,
+    cell_alignment_map: dict[tuple[str, int, int], TextAlign],
+) -> TextAlign:
+    if cfg.text_align is not None:
+        align = cfg.text_align
+    else:
+        align = cfg.header_align if section == "header" else cfg.cell_align
+
+    if cfg.column_alignments is not None and col < len(cfg.column_alignments):
+        align = cfg.column_alignments[col]
+
+    return cell_alignment_map.get((section, row, col), align)
+
+
 def render_table(
     canvas: Image.Image,
     cfg: TableElementConfig,
@@ -170,6 +196,7 @@ def render_table(
 
     text_color = parse_color(cfg.text_color)
     header_text_color = parse_color(cfg.header_text_color)
+    cell_alignment_map = _build_cell_alignment_map(cfg)
 
     if has_header:
         for c in range(col_count):
@@ -180,7 +207,7 @@ def render_table(
                 rect,
                 header_font,
                 header_text_color,
-                cfg.header_align,
+                _resolve_alignment(cfg, "header", 0, c, cell_alignment_map),
                 cfg.cell_padding,
             )
 
@@ -197,7 +224,7 @@ def render_table(
                 rect,
                 cell_font,
                 text_color,
-                cfg.cell_align,
+                _resolve_alignment(cfg, "body", i, c, cell_alignment_map),
                 cfg.cell_padding,
             )
 

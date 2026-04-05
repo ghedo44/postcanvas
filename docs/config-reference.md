@@ -98,7 +98,10 @@ Typography fields:
 
 - `font_family`, `font_path`
 - `font_size`, `header_font_size`
+- `text_align` (global alignment for all header/body cells)
 - `cell_align`, `header_align`
+- `column_alignments` (per-column alignment list)
+- `cell_alignments` (per-cell targeted overrides)
 
 Visual fields:
 
@@ -118,6 +121,29 @@ Behavior notes:
 - Headers and row lengths are padded to match the widest row count.
 - If `column_widths` is omitted or invalid, columns are distributed evenly.
 - Rounded corners clip inner table fills and grid to keep visuals inside the border.
+- Alignment precedence is: `cell_alignments` > `column_alignments` > `text_align` > (`header_align`/`cell_align`).
+- `column_alignments` is strictly validated and must match the detected column count.
+- `cell_alignments` is strictly validated for row/column bounds and section (`header` or `body`).
+
+Alignment example:
+
+```python
+from postcanvas.models import TextAlign, TableCellAlignmentConfig, TableElementConfig
+
+TableElementConfig(
+	headers=["Metric", "W1", "W2", "W3"],
+	rows=[
+		["Reach", "10", "12", "14"],
+		["CTR", "2.2%", "2.6%", "2.8%"],
+	],
+	text_align=TextAlign.LEFT,
+	column_alignments=[TextAlign.LEFT, TextAlign.CENTER, TextAlign.CENTER, TextAlign.CENTER],
+	cell_alignments=[
+		TableCellAlignmentConfig(section="header", row=0, col=0, align=TextAlign.LEFT),
+		TableCellAlignmentConfig(section="body", row=1, col=3, align=TextAlign.RIGHT),
+	],
+)
+```
 
 ## `ChartSeriesConfig`
 

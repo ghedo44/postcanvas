@@ -153,6 +153,8 @@ Default values: shapes=1, images=5, tables=6, charts=7, texts=10.
 
 ```python
 from postcanvas.models import (
+    TextAlign,
+    TableCellAlignmentConfig,
     TableElementConfig,
     ChartElementConfig,
     ChartSeriesConfig,
@@ -165,6 +167,12 @@ tables = [
         rows=[
             ["Reach", "28K", "31K", "37K"],
             ["Saves", "940", "1106", "1483"],
+        ],
+        text_align=TextAlign.LEFT,
+        column_alignments=[TextAlign.LEFT, TextAlign.CENTER, TextAlign.CENTER, TextAlign.CENTER],
+        cell_alignments=[
+            TableCellAlignmentConfig(section="header", row=0, col=0, align=TextAlign.LEFT),
+            TableCellAlignmentConfig(section="body", row=1, col=3, align=TextAlign.RIGHT),
         ],
         x="50%", y="56%", width="88%", height="52%", anchor="center",
     )

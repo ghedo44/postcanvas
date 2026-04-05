@@ -11,6 +11,8 @@ from postcanvas.models import (
     GradientStop,
     ShapeConfig,
     ShapeType,
+    TextAlign,
+    TableCellAlignmentConfig,
     TableElementConfig,
     TextConfig,
 )
@@ -88,6 +90,17 @@ post = instagram_post(
                 ["CTR", "2.4%", "2.8%", "3.1%"],
             ],
             column_widths=[0.4, 0.2, 0.2, 0.2],
+            text_align=TextAlign.LEFT,
+            column_alignments=[
+                TextAlign.LEFT,
+                TextAlign.CENTER,
+                TextAlign.CENTER,
+                TextAlign.CENTER,
+            ],
+            cell_alignments=[
+                TableCellAlignmentConfig(section="header", row=0, col=0, align=TextAlign.LEFT),
+                TableCellAlignmentConfig(section="body", row=4, col=3, align=TextAlign.RIGHT),
+            ],
             font_path="examples/assets/Roboto/static/Roboto-Regular.ttf",
             font_size=23,
             header_font_size=24,

@@ -11,6 +11,7 @@ from .text import TextConfig
 from .elements import (
     ImageElementConfig,
     ShapeConfig,
+    TableCellAlignmentConfig,
     TableElementConfig,
     ChartSeriesConfig,
     ChartElementConfig,
@@ -26,6 +27,6 @@ __all__ = [
     "TextTransform", "ShadowConfig", "StrokeConfig", "GradientStop",
     "GradientConfig", "PaddingConfig", "BorderConfig", "FilterConfig",
     "BackgroundConfig", "TextConfig", "ImageElementConfig", "ShapeConfig",
-    "TableElementConfig", "ChartSeriesConfig", "ChartElementConfig",
+    "TableCellAlignmentConfig", "TableElementConfig", "ChartSeriesConfig", "ChartElementConfig",
     "WatermarkConfig", "MetaConfig", "CanvasConfig", "PostConfig",
 ]
