@@ -167,7 +167,7 @@ def brand_header(n, total=7, dark=False, right_label='APPLE FY2025'):
     ]
     texts = [
         text('F / R', 58, 48, 20, main, anchor='left', font=BLACK, letter_spacing=2),
-        text('FINANCE REPORTS', 58, 78, 13, secondary, anchor='left', font=MED, letter_spacing=2),
+        text('REPORT FINANZIARI', 58, 78, 13, secondary, anchor='left', font=MED, letter_spacing=2),
         text(right_label, 880, 54, 16, secondary, anchor='right', font=MED, letter_spacing=1),
         text(f'{n}/{total}', 973, 52, 16, INK if dark else WHITE, anchor='center', font=BOLD),
     ]
@@ -208,7 +208,7 @@ def metric_row(x, y, width, code, label, value, detail, accent=GOLD):
 slides = []
 
 # Slide 1 — Cover: editorial copy + large circular financial motif.
-s1_shapes, s1_texts = brand_header(1, dark=False, right_label='REPORT FOR YOUR PORTFOLIO')
+s1_shapes, s1_texts = brand_header(1, dark=False, right_label='REPORT PER IL PORTAFOGLIO')
 s1_shapes += decorative_rings(920, 260, 1.05)
 s1_shapes += [
     circle(875, 805, 610, fill=INK, z=1),
@@ -218,9 +218,9 @@ s1_shapes += [
     rect(58, 642, 205, 62, fill=GOLD, radius=31, z=4),
 ]
 s1_texts += [
-    text('We Know What\nMoved Apple', 58, 186, 64, INK, max_width=640, font=BLACK, line_spacing=1.02),
+    text('Cosa Ha Mosso\nApple', 58, 186, 64, INK, max_width=640, font=BLACK, line_spacing=1.02),
     text(
-        'A clean reading of revenue, margins, business mix and the risks behind FY2025.',
+        'Una lettura chiara di ricavi, margini, mix di business e rischi del FY2025.',
         60,
         405,
         25,
@@ -229,15 +229,15 @@ s1_texts += [
         font=REG,
         line_spacing=1.28,
     ),
-    text('READ THE REPORT  →', 161, 673, 18, WHITE, anchor='center', font=BOLD, letter_spacing=1),
-    text('$416.2B', 875, 742, 72, INK, anchor='center', font=BLACK, align='center'),
-    text('REVENUE FY2025', 875, 824, 19, GOLD_DARK, anchor='center', font=BOLD, align='center', letter_spacing=2),
-    text('+6.4% YoY', 875, 868, 25, INK, anchor='center', font=BOLD, align='center'),
+    text('LEGGI IL REPORT  →', 161, 673, 18, WHITE, anchor='center', font=BOLD, letter_spacing=1),
+    text('$416,2B', 875, 742, 72, INK, anchor='center', font=BLACK, align='center'),
+    text('RICAVI FY2025', 875, 824, 19, GOLD_DARK, anchor='center', font=BOLD, align='center', letter_spacing=2),
+    text('+6,4% YoY', 875, 868, 25, INK, anchor='center', font=BOLD, align='center'),
     text('112', 710, 651, 33, WHITE, anchor='center', font=BLACK),
-    text('NET', 710, 687, 13, WHITE, anchor='center', font=BOLD, letter_spacing=1),
-    text('46.9%', 987, 952, 23, INK, anchor='center', font=BLACK),
-    text('GROSS MARGIN', 987, 985, 11, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=1),
-    text('www.finance-reports.com', 58, 1194, 16, MUTED, font=REG),
+    text('UTILE', 710, 687, 13, WHITE, anchor='center', font=BOLD, letter_spacing=1),
+    text('46,9%', 987, 952, 23, INK, anchor='center', font=BLACK),
+    text('MARGINE LORDO', 987, 985, 11, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=1),
+    text('FINANZA, SENZA RUMORE', 58, 1194, 16, MUTED, font=MED, letter_spacing=1),
     *footer(1),
 ]
 slides.append(
@@ -250,7 +250,7 @@ slides.append(
 )
 
 # Slide 2 — Record result, inspired by the reference's "New / About" layout.
-s2_shapes, s2_texts = brand_header(2, right_label='EXECUTIVE SUMMARY')
+s2_shapes, s2_texts = brand_header(2, right_label='SINTESI ESECUTIVA')
 s2_shapes += decorative_rings(110, 480, 0.9)
 s2_shapes += [
     circle(350, 388, 390, fill=INK, z=1),
@@ -260,11 +260,11 @@ s2_shapes += [
 ]
 s2_texts += [
     text('RECORD', 557, 215, 30, WHITE, anchor='center', font=BLACK, letter_spacing=1),
-    text('$112.0B', 350, 350, 56, INK, anchor='center', font=BLACK),
-    text('NET INCOME', 350, 420, 18, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=2),
-    text('Net income', 666, 305, 28, INK, font=BOLD),
+    text('$112,0B', 350, 350, 56, INK, anchor='center', font=BLACK),
+    text('UTILE NETTO', 350, 420, 18, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=2),
+    text('Utile netto', 666, 305, 28, INK, font=BOLD),
     text(
-        'Profit expanded faster than revenue, lifting net margin to 26.9%.',
+        'L’utile cresce più dei ricavi e porta il margine netto al 26,9%.',
         666,
         356,
         20,
@@ -273,11 +273,11 @@ s2_texts += [
         font=REG,
         line_spacing=1.28,
     ),
-    text('+19.5%', 666, 476, 40, GOLD, font=BLACK),
-    text('year over year', 668, 527, 17, MUTED, font=REG),
-    text('ABOUT THE REPORT', 548, 828, 23, INK, anchor='topcenter', font=BLACK, align='center', letter_spacing=1),
+    text('+19,5%', 666, 476, 40, GOLD, font=BLACK),
+    text('anno su anno', 668, 527, 17, MUTED, font=REG),
+    text('IL REPORT IN BREVE', 548, 828, 23, INK, anchor='topcenter', font=BLACK, align='center', letter_spacing=1),
     text(
-        'Services improved the revenue mix and profitability. iPhone still contributes roughly half of sales, while buybacks continue to reshape equity and ROE.',
+        'Services migliora il mix e la redditività. iPhone pesa ancora circa metà dei ricavi, mentre i buyback continuano a modificare equity e ROE.',
         548,
         887,
         25,
@@ -300,21 +300,21 @@ slides.append(
 )
 
 # Slide 3 — Metric menu: two-column list with circular markers and thin dividers.
-s3_shapes, s3_texts = brand_header(3, right_label='KEY METRICS')
+s3_shapes, s3_texts = brand_header(3, right_label='NUMERI CHIAVE')
 s3_shapes += decorative_rings(910, 126, 0.55)
 s3_texts += [
-    text('Our Best Numbers', 58, 148, 47, INK, font=BLACK),
-    text('Six data points that frame the FY2025 report.', 60, 214, 20, MUTED, font=REG),
+    text('I Numeri Che Contano', 58, 148, 47, INK, font=BLACK),
+    text('Sei dati per leggere il report FY2025.', 60, 214, 20, MUTED, font=REG),
 ]
 left_rows = [
-    ('01', 'Revenue', '$416.2B', '+6.4% YoY'),
-    ('02', 'Net income', '$112.0B', '26.9% net margin'),
-    ('03', 'Gross margin', '46.9%', '+0.7 percentage points'),
+    ('01', 'Ricavi', '$416,2B', '+6,4% YoY'),
+    ('02', 'Utile netto', '$112,0B', 'Margine netto 26,9%'),
+    ('03', 'Margine lordo', '46,9%', '+0,7 punti percentuali'),
 ]
 right_rows = [
-    ('04', 'Services', '$109.2B', '+14% year over year'),
-    ('05', 'Buybacks', '$90.1B', 'capital returned in FY2025'),
-    ('06', 'Dividends', '$15.4B', 'cash paid to shareholders'),
+    ('04', 'Services', '$109,2B', '+14% anno su anno'),
+    ('05', 'Buyback', '$90,1B', 'Capitale restituito nel FY2025'),
+    ('06', 'Dividendi', '$15,4B', 'Cassa pagata agli azionisti'),
 ]
 for idx, row in enumerate(left_rows):
     sh, tx = metric_row(58, 320 + idx * 235, 450, *row)
@@ -335,26 +335,26 @@ slides.append(
 )
 
 # Slide 4 — Trend charts, kept intentionally spare and flat.
-s4_shapes, s4_texts = brand_header(4, right_label='THREE-YEAR TREND')
+s4_shapes, s4_texts = brand_header(4, right_label='TRE ANNI IN SINTESI')
 s4_shapes += decorative_rings(930, 225, 0.48)
 s4_shapes += [
     rect(58, 300, 964, 430, fill=WHITE, radius=34, stroke=LINE, stroke_width=2, z=1),
     rect(58, 790, 964, 315, fill=PAPER_2, radius=34, z=1),
 ]
 s4_texts += [
-    text('Revenue Keeps Climbing', 58, 145, 47, INK, font=BLACK),
-    text('The 2025 result breaks the near-flat growth seen in 2024.', 60, 211, 20, MUTED, font=REG),
-    text('REVENUE', 104, 332, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
-    text('$416.2B', 104, 365, 42, INK, font=BLACK),
-    text('+6.4%', 908, 346, 29, GOLD, anchor='topright', font=BLACK),
+    text('I Ricavi Tornano Ad Accelerare', 58, 145, 47, INK, font=BLACK),
+    text('Il 2025 rompe la quasi-stasi vista nel 2024.', 60, 211, 20, MUTED, font=REG),
+    text('RICAVI', 104, 332, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
+    text('$416,2B', 104, 365, 42, INK, font=BLACK),
+    text('+6,4%', 908, 346, 29, GOLD, anchor='topright', font=BLACK),
     text('2025 YoY', 908, 387, 15, MUTED, anchor='topright', font=REG),
-    text('PROFITABILITY', 104, 835, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
-    text('Net income accelerated faster than sales.', 104, 880, 28, INK, font=BOLD, max_width=420),
-    text('$97.0B', 114, 980, 24, MUTED, font=BLACK),
+    text('REDDITIVITÀ', 104, 835, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
+    text('L’utile netto accelera più dei ricavi.', 104, 880, 28, INK, font=BOLD, max_width=420),
+    text('$97,0B', 114, 980, 24, MUTED, font=BLACK),
     text('2023', 114, 1018, 15, MUTED, font=REG),
-    text('$93.7B', 385, 980, 24, MUTED, font=BLACK),
+    text('$93,7B', 385, 980, 24, MUTED, font=BLACK),
     text('2024', 385, 1018, 15, MUTED, font=REG),
-    text('$112.0B', 656, 980, 29, GOLD, font=BLACK),
+    text('$112,0B', 656, 980, 29, GOLD, font=BLACK),
     text('2025', 656, 1022, 15, MUTED, font=REG),
     *footer(4),
 ]
@@ -398,7 +398,7 @@ slides.append(
 )
 
 # Slide 5 — Revenue mix: list + large cropped circular focus.
-s5_shapes, s5_texts = brand_header(5, right_label='REVENUE MIX')
+s5_shapes, s5_texts = brand_header(5, right_label='MIX DEI RICAVI')
 s5_shapes += decorative_rings(172, 1190, 0.75)
 s5_shapes += [
     circle(930, 780, 620, fill=INK, z=1),
@@ -406,24 +406,24 @@ s5_shapes += [
     rect(735, 438, 195, 76, fill=GOLD, radius=30, z=4),
 ]
 s5_texts += [
-    text('Where Revenue Comes From', 58, 148, 47, INK, font=BLACK),
-    text('A simple view of the FY2025 business mix.', 60, 214, 20, MUTED, font=REG),
+    text('Da Dove Arrivano I Ricavi', 58, 148, 47, INK, font=BLACK),
+    text('Una lettura semplice del mix FY2025.', 60, 214, 20, MUTED, font=REG),
     text('iPhone', 60, 330, 23, INK, font=BOLD),
-    text('$209.6B', 470, 330, 24, GOLD, anchor='topright', font=BLACK),
-    text('50.4% of total revenue', 60, 372, 18, MUTED, font=REG),
+    text('$209,6B', 470, 330, 24, GOLD, anchor='topright', font=BLACK),
+    text('50,4% dei ricavi totali', 60, 372, 18, MUTED, font=REG),
     text('Services', 60, 470, 23, INK, font=BOLD),
-    text('$109.2B', 470, 470, 24, GOLD, anchor='topright', font=BLACK),
-    text('26.2% • highest-margin segment', 60, 512, 18, MUTED, font=REG),
+    text('$109,2B', 470, 470, 24, GOLD, anchor='topright', font=BLACK),
+    text('26,2% • segmento a margine più alto', 60, 512, 18, MUTED, font=REG),
     text('Wearables', 60, 610, 23, INK, font=BOLD),
-    text('$35.7B', 470, 610, 24, GOLD, anchor='topright', font=BLACK),
+    text('$35,7B', 470, 610, 24, GOLD, anchor='topright', font=BLACK),
     text('Mac', 60, 750, 23, INK, font=BOLD),
-    text('$33.7B', 470, 750, 24, GOLD, anchor='topright', font=BLACK),
+    text('$33,7B', 470, 750, 24, GOLD, anchor='topright', font=BLACK),
     text('iPad', 60, 890, 23, INK, font=BOLD),
-    text('$28.0B', 470, 890, 24, GOLD, anchor='topright', font=BLACK),
-    text('CORE ENGINE', 832, 476, 18, WHITE, anchor='center', font=BOLD, letter_spacing=1),
-    text('50.4%', 930, 730, 70, INK, anchor='center', font=BLACK),
-    text('IPHONE SHARE', 930, 808, 18, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=2),
-    text('Services is now the clearest\nsource of mix improvement.', 930, 870, 17, MUTED, anchor='topcenter', max_width=290, font=MED, align='center', line_spacing=1.18),
+    text('$28,0B', 470, 890, 24, GOLD, anchor='topright', font=BLACK),
+    text('MOTORE PRINCIPALE', 832, 476, 16, WHITE, anchor='center', font=BOLD, letter_spacing=1),
+    text('50,4%', 930, 730, 70, INK, anchor='center', font=BLACK),
+    text('QUOTA IPHONE', 930, 808, 18, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=2),
+    text('Services è la leva più chiara\nper migliorare il mix.', 930, 870, 17, MUTED, anchor='topcenter', max_width=290, font=MED, align='center', line_spacing=1.18),
     *footer(5),
 ]
 for y in (425, 565, 705, 845, 985):
@@ -438,7 +438,7 @@ slides.append(
 )
 
 # Slide 6 — ROE interpretation with one strong circular number.
-s6_shapes, s6_texts = brand_header(6, right_label='RETURN ON EQUITY')
+s6_shapes, s6_texts = brand_header(6, right_label='RITORNO SUL CAPITALE')
 s6_shapes += decorative_rings(930, 242, 0.9)
 s6_shapes += [
     circle(792, 740, 540, fill=INK, z=1),
@@ -447,12 +447,12 @@ s6_shapes += [
     line(58, 1078, 520, 0, GOLD, 4, z=2),
 ]
 s6_texts += [
-    text('ROE Needs Context', 58, 148, 47, INK, font=BLACK),
-    text('A very high ratio can still tell an incomplete story.', 60, 214, 20, MUTED, font=REG),
-    text('READ CAREFULLY', 185, 356, 18, WHITE, anchor='center', font=BOLD, letter_spacing=1),
-    text('Buybacks reduce book equity.', 58, 465, 31, INK, font=BLACK, max_width=460),
+    text('Il ROE Va Letto Con Contesto', 58, 148, 47, INK, font=BLACK),
+    text('Un rapporto molto alto può raccontare solo una parte della storia.', 60, 214, 20, MUTED, font=REG),
+    text('DA LEGGERE BENE', 185, 356, 18, WHITE, anchor='center', font=BOLD, letter_spacing=1),
+    text('I buyback riducono l’equity contabile.', 58, 465, 31, INK, font=BLACK, max_width=470),
     text(
-        'That smaller denominator can make return on equity look unusually high. It is a useful efficiency signal, not a promise of investment returns.',
+        'Un denominatore più piccolo può far apparire il ROE insolitamente alto. È un segnale di efficienza, non una promessa di rendimento.',
         58,
         540,
         22,
@@ -463,11 +463,11 @@ s6_texts += [
     ),
     text('≈171%', 792, 680, 74, INK, anchor='center', font=BLACK),
     text('ROE FY2025', 792, 766, 19, GOLD_DARK, anchor='center', font=BOLD, letter_spacing=2),
-    text('based on average equity', 792, 814, 17, MUTED, anchor='center', font=REG),
+    text('calcolato su equity media', 792, 814, 17, MUTED, anchor='center', font=REG),
     text('BUYBACK', 58, 1120, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
-    text('$90.1B', 58, 1152, 34, INK, font=BLACK),
-    text('ENDING EQUITY', 350, 1120, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
-    text('$73.7B', 350, 1152, 34, INK, font=BLACK),
+    text('$90,1B', 58, 1152, 34, INK, font=BLACK),
+    text('EQUITY FINALE', 350, 1120, 16, GOLD_DARK, font=BOLD, letter_spacing=2),
+    text('$73,7B', 350, 1152, 34, INK, font=BLACK),
     *footer(6),
 ]
 slides.append(
@@ -480,21 +480,21 @@ slides.append(
 )
 
 # Slide 7 — Risks and conclusion, echoing the reference's final CTA panel.
-s7_shapes, s7_texts = brand_header(7, right_label='WHAT TO WATCH')
+s7_shapes, s7_texts = brand_header(7, right_label='COSA MONITORARE')
 s7_shapes += decorative_rings(930, 205, 0.65)
 s7_shapes += [
     circle(930, 1095, 610, fill=INK, z=1),
     rect(720, 790, 235, 92, fill=GOLD, radius=32, z=4),
 ]
 s7_texts += [
-    text('What To Watch Next', 58, 148, 47, INK, font=BLACK),
-    text('Four risks that can change the quality of the next report.', 60, 214, 20, MUTED, font=REG),
+    text('Cosa Monitorare Ora', 58, 148, 47, INK, font=BLACK),
+    text('Quattro rischi che possono cambiare la qualità del prossimo report.', 60, 214, 20, MUTED, font=REG),
 ]
 risk_rows = [
-    ('01', 'REGULATION', 'App Store rules, antitrust and distribution agreements.'),
-    ('02', 'SUPPLY CHAIN', 'Production concentration, components, tariffs and geopolitics.'),
-    ('03', 'COMPETITION', 'AI, product cycles and innovation that may carry lower margins.'),
-    ('04', 'CHINA, FX & MACRO', 'International demand, currencies and trade tension.'),
+    ('01', 'REGOLAZIONE', 'App Store, antitrust e accordi di distribuzione.'),
+    ('02', 'SUPPLY CHAIN', 'Produzione concentrata, componenti, tariffe e geopolitica.'),
+    ('03', 'COMPETIZIONE', 'AI, cicli di prodotto e innovazione con margini potenzialmente più bassi.'),
+    ('04', 'CINA, FX E MACRO', 'Domanda internazionale, valute e tensioni commerciali.'),
 ]
 for i, (number, title_label, detail) in enumerate(risk_rows):
     y = 325 + i * 155
@@ -508,10 +508,10 @@ for i, (number, title_label, detail) in enumerate(risk_rows):
         text(detail, 142, y + 37, 18, MUTED, max_width=450, font=REG, line_spacing=1.2),
     ]
 s7_texts += [
-    text('SAVE REPORT', 837, 836, 22, WHITE, anchor='center', font=BLACK, letter_spacing=1),
-    text('Strong numbers.\nHigher expectations.', 830, 976, 39, WHITE, anchor='topcenter', max_width=390, font=BLACK, align='center', line_spacing=1.08),
+    text('SALVA IL REPORT', 837, 836, 20, WHITE, anchor='center', font=BLACK, letter_spacing=1),
+    text('Numeri forti.\nAspettative più alte.', 830, 976, 39, WHITE, anchor='topcenter', max_width=390, font=BLACK, align='center', line_spacing=1.08),
     text(
-        'The next test is sustaining growth and margins while regulation and supply-chain pressure rise.',
+        'Il prossimo test è mantenere crescita e margini mentre aumentano pressione regolatoria e rischi di supply chain.',
         830,
         1095,
         20,
