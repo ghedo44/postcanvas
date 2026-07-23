@@ -1,9 +1,13 @@
-name: publish-pypi
+name: release
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: postcanvas-release
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -78,6 +82,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -109,3 +115,63 @@ jobs:
       - name: Publish to PyPI with trusted publishing
         if: steps.version.outputs.publish == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Verify exact PyPI release artifacts
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          version = os.environ["VERSION"]
+          url = f"https://pypi.org/pypi/postcanvas/{version}/json"
+          expected = {
+              f"postcanvas-{version}-py3-none-any.whl",
+              f"postcanvas-{version}.tar.gz",
+          }
+          last_error = None
+          for _ in range(12):
+              try:
+                  with urllib.request.urlopen(url, timeout=30) as response:
+                      payload = json.load(response)
+                  actual = payload["info"]["version"]
+                  files = {item["filename"] for item in payload["urls"]}
+                  assert actual == version, (actual, version)
+                  assert expected <= files, (expected, files)
+                  print(f"verified postcanvas {actual}: {', '.join(sorted(expected))}")
+                  break
+              except (AssertionError, urllib.error.HTTPError, urllib.error.URLError) as error:
+                  last_error = error
+                  time.sleep(5)
+          else:
+              raise SystemExit(f"PyPI verification failed: {last_error}")
+          PY
+
+  github-release:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub release for the verified PyPI version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.publish.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub release $TAG already exists"
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "postcanvas ${VERSION}" \
+              --generate-notes
+          fi
+          gh release view "$TAG" --json tagName,name,isDraft,isPrerelease,url
