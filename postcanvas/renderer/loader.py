@@ -1,36 +1,64 @@
 from __future__ import annotations
+
+from io import BytesIO
 from typing import Optional
+
+import requests
 from PIL import Image
+
 from ..models import ImageFit
+
 
 def load_image(src: str) -> Optional[Image.Image]:
     if src.startswith(("http://", "https://")):
         try:
-            import requests
-            from io import BytesIO
-            r = requests.get(src, timeout=10)
-            r.raise_for_status()
-            return Image.open(BytesIO(r.content)).convert("RGBA")
-        except Exception as e:
-            print(f"⚠  Could not fetch image {src}: {e}")
+            response = requests.get(src, timeout=10)
+            response.raise_for_status()
+            return Image.open(BytesIO(response.content)).convert("RGBA")
+        except (requests.RequestException, OSError) as exc:
+            print(f"Could not fetch image {src}: {exc}")
             return None
     try:
         return Image.open(src).convert("RGBA")
-    except Exception as e:
-        print(f"⚠  Could not open image {src}: {e}")
+    except OSError as exc:
+        print(f"Could not open image {src}: {exc}")
         return None
 
-def fit_image(img: Image.Image, w: int, h: int, fit: ImageFit) -> Image.Image:
+
+def fit_image(
+    image: Image.Image,
+    width: int,
+    height: int,
+    fit: ImageFit,
+    focal_x: float = 0.5,
+    focal_y: float = 0.5,
+) -> Image.Image:
+    """Fit an image into a target box using a normalized focal point for crops."""
+
     if fit == ImageFit.FILL:
-        return img.resize((w, h), Image.Resampling.LANCZOS)
-    ir, tr = img.width / img.height, w / h
+        return image.resize((width, height), Image.Resampling.LANCZOS)
+    image_ratio = image.width / image.height
+    target_ratio = width / height
     if fit == ImageFit.COVER:
-        nw, nh = (w, int(w / ir)) if ir < tr else (int(h * ir), h)
-        img = img.resize((nw, nh), Image.Resampling.LANCZOS)
-        l, t = (img.width - w) // 2, (img.height - h) // 2
-        return img.crop((l, t, l + w, t + h))
+        new_width, new_height = (
+            (width, int(round(width / image_ratio)))
+            if image_ratio < target_ratio
+            else (int(round(height * image_ratio)), height)
+        )
+        resized = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        max_left = max(0, resized.width - width)
+        max_top = max(0, resized.height - height)
+        left = int(round(max_left * min(1.0, max(0.0, focal_x))))
+        top = int(round(max_top * min(1.0, max(0.0, focal_y))))
+        return resized.crop((left, top, left + width, top + height))
     if fit == ImageFit.CONTAIN:
-        nw, nh = (w, int(w / ir)) if ir > tr else (int(h * ir), h)
-        return img.resize((nw, nh), Image.Resampling.LANCZOS)
-    # CENTER
-    return img.resize((min(img.width, w), min(img.height, h)), Image.Resampling.LANCZOS)
+        new_width, new_height = (
+            (width, int(round(width / image_ratio)))
+            if image_ratio > target_ratio
+            else (int(round(height * image_ratio)), height)
+        )
+        return image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    return image.resize(
+        (min(image.width, width), min(image.height, height)),
+        Image.Resampling.LANCZOS,
+    )

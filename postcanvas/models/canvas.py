@@ -1,51 +1,41 @@
 from __future__ import annotations
+
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
+
 from .background import BackgroundConfig
-from .text import TextConfig
-from .elements import ImageElementConfig, ShapeConfig, TableElementConfig, ChartElementConfig
-from .watermark import WatermarkConfig
+from .elements import (
+    ChartElementConfig,
+    ImageElementConfig,
+    ShapeConfig,
+    TableElementConfig,
+)
+from .layout import LayoutPolicyConfig
 from .meta import MetaConfig
-from .primitives import PaddingConfig, FilterConfig
+from .primitives import FilterConfig, PaddingConfig
+from .text import TextConfig
+from .watermark import WatermarkConfig
+
 
 class CanvasConfig(BaseModel):
-    """
-    One slide / frame in a carousel (or the only frame for a single image).
+    """One slide or frame in a carousel."""
 
-    Every field is optional – unset fields fall back to the parent PostConfig.
-    Elements (texts, images, shapes, tables, charts) are MERGED with the parent's by default;
-    set replace_elements=True to use ONLY the elements defined here.
-    """
-
-    # Override parent dimensions
-    width:  Optional[int] = None
-    height: Optional[int] = None
-
-    # Override parent background / padding
+    width: Optional[int] = Field(default=None, gt=0)
+    height: Optional[int] = Field(default=None, gt=0)
     background: Optional[BackgroundConfig] = None
-    padding:    Optional[PaddingConfig]    = None
-
-    # Default text font for this canvas (overrides PostConfig defaults)
+    padding: Optional[PaddingConfig] = None
+    safe_area: Optional[PaddingConfig] = None
+    layout_policy: Optional[LayoutPolicyConfig] = None
     text_font_family: Optional[str] = None
-    text_font_path:   Optional[str] = None
-
-    # Canvas-specific elements (merged with parent unless replace_elements=True)
-    texts:  List[TextConfig]         = Field(default_factory=list)
+    text_font_path: Optional[str] = None
+    texts: List[TextConfig] = Field(default_factory=list)
     images: List[ImageElementConfig] = Field(default_factory=list)
-    shapes: List[ShapeConfig]        = Field(default_factory=list)
+    shapes: List[ShapeConfig] = Field(default_factory=list)
     tables: List[TableElementConfig] = Field(default_factory=list)
     charts: List[ChartElementConfig] = Field(default_factory=list)
-
-    # If True, these elements replace (not extend) the parent's element lists
     replace_elements: bool = False
-
-    # Per-canvas post-processing
     canvas_filters: List[FilterConfig] = Field(default_factory=list)
-
-    # Watermark override (None = use parent watermark)
     watermark: Optional[WatermarkConfig] = None
-
-    # Output filename without extension (e.g. "slide_01")
     output_filename: Optional[str] = None
-
     meta: MetaConfig = Field(default_factory=MetaConfig)
