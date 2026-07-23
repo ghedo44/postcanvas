@@ -3,6 +3,8 @@ name: publish-pypi
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -72,6 +74,7 @@ jobs:
 
   publish:
     needs: [lint, test, build]
+    if: github.event_name != 'pull_request' || github.head_ref == 'release/v0.3.2-publish'
     runs-on: ubuntu-latest
     environment:
       name: pypi
