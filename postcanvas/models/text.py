@@ -19,8 +19,9 @@ class TextConfig(BaseModel):
     id: Optional[str] = None
     collision_group: Optional[str] = None
     allow_overlap_with: List[str] = Field(default_factory=list)
+    respect_safe_area: bool = True
+    respect_exclusion_zones: bool = True
 
-    # Position and optional bounded text box.
     x: Dimension = "50%"
     y: Dimension = "50%"
     width: Optional[Dimension] = None
@@ -28,7 +29,6 @@ class TextConfig(BaseModel):
     max_width: Optional[Dimension] = None
     max_height: Optional[Dimension] = None
 
-    # Font.
     font_family: Optional[str] = None
     font_path: Optional[str] = None
     font_fallback_paths: List[str] = Field(default_factory=list)
@@ -36,16 +36,19 @@ class TextConfig(BaseModel):
     min_font_size: int = Field(default=12, ge=1)
     font_weight: FontWeight = FontWeight.REGULAR
     italic: bool = False
+    variation_name: Optional[str] = None
+    variation_axes: List[float] = Field(default_factory=list)
 
-    # Responsive fitting and wrapping.
     fit: TextFit = "none"
     overflow: TextOverflow = "visible"
     wrap_mode: TextWrapMode = "greedy"
     max_lines: Optional[int] = Field(default=None, ge=1)
     break_long_words: bool = True
     preserve_newlines: bool = True
+    widow_control: bool = False
+    min_first_line_words: int = Field(default=1, ge=1)
+    min_last_line_words: int = Field(default=1, ge=1)
 
-    # Style.
     color: str = "#FFFFFF"
     align: TextAlign = TextAlign.CENTER
     vertical_align: Literal["top", "middle", "bottom"] = "top"
@@ -63,14 +66,12 @@ class TextConfig(BaseModel):
     contrast_dark_color: str = "#111111"
     contrast_threshold: int = Field(default=145, ge=0, le=255)
 
-    # Decorations.
     shadow: Optional[ShadowConfig] = None
     stroke: Optional[StrokeConfig] = None
     background_color: Optional[str] = None
     background_padding: int = Field(default=10, ge=0)
     background_radius: float = Field(default=6.0, ge=0)
 
-    # Compositing.
     opacity: float = Field(default=1.0, ge=0.0, le=1.0)
     rotation: float = 0.0
     blend_mode: BlendMode = BlendMode.NORMAL
