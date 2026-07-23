@@ -9,15 +9,64 @@ _install_validation_extensions()
 
 from .api import RenderResult, generate, render
 from .renderer import GenerateResult, image_to_bytes, render_one, save_image_to_path
-from .template import LayoutNode, PreviewFixture, Template, TemplateRenderResult, TemplateVariant, Theme
-from .validation import LayoutIssue, LayoutReport, LayoutValidationError, Rect, contrast_ratio, validate_post
+from .rich_text import (
+    RichTextBlock,
+    RichTextComposition,
+    RichTextLayout,
+    RichTextLineLayout,
+    RichTextRunLayout,
+    RichTextSpan,
+    compose_rich_text,
+)
+from .selectors import PromptVariantSelector, VariantSelector
+from .template import (
+    LayoutNode,
+    PreviewFixture,
+    Template,
+    TemplateRenderResult,
+    TemplateVariant,
+    Theme,
+)
+from .validation import (
+    LayoutIssue,
+    LayoutReport,
+    LayoutValidationError,
+    Rect,
+    contrast_ratio,
+    validate_post,
+)
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 __all__ = [
-    "GenerateResult", "LayoutIssue", "LayoutNode", "LayoutReport",
-    "LayoutValidationError", "PreviewFixture", "Rect", "RenderResult",
-    "Template", "TemplateRenderResult", "TemplateVariant", "Theme",
-    "contrast_ratio", "generate", "image_to_bytes", "models", "presets",
-    "render", "render_one", "save_image_to_path", "validate_post",
+    "GenerateResult",
+    "LayoutIssue",
+    "LayoutNode",
+    "LayoutReport",
+    "LayoutValidationError",
+    "PreviewFixture",
+    "PromptVariantSelector",
+    "Rect",
+    "RenderResult",
+    "RichTextBlock",
+    "RichTextComposition",
+    "RichTextLayout",
+    "RichTextLineLayout",
+    "RichTextRunLayout",
+    "RichTextSpan",
+    "Template",
+    "TemplateRenderResult",
+    "TemplateVariant",
+    "Theme",
+    "VariantSelector",
+    "compose_rich_text",
+    "contrast_ratio",
+    "generate",
+    "image_to_bytes",
+    "models",
+    "presets",
+    "render",
+    "render_one",
+    "save_image_to_path",
+    "validate_post",
 ]
