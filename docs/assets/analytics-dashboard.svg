@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#080b18"/>
+  <stop offset="0.52" stop-color="#17112f"/>
+  <stop offset="1" stop-color="#0b2132"/>
+</linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#8b5cf6"/>
+  <stop offset="1" stop-color="#ec4899"/>
+</linearGradient>
+<linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#22d3ee"/>
+  <stop offset="1" stop-color="#3b82f6"/>
+</linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+  <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000" flood-opacity=".35"/>
+</filter>
+<filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+  <feGaussianBlur stdDeviation="45"/>
+</filter>
+</defs>
+
+<rect width="1080" height="1080" rx="44" fill="#07111f"/>
+<circle cx="900" cy="120" r="210" fill="#2563eb" opacity=".16" filter="url(#soft)"/>
+<text x="82" y="112" font-family="Inter,Arial,sans-serif" font-size="24" fill="#8aa0bd">SOCIAL PERFORMANCE</text>
+<text x="82" y="182" font-family="Inter,Arial,sans-serif" font-size="64" fill="#fff" font-weight="800">A dashboard people read.</text>
+<g transform="translate(82 236)">
+ <rect width="916" height="174" rx="28" fill="#ffffff" opacity=".055" stroke="#ffffff" stroke-opacity=".1"/>
+ <text x="38" y="48" font-family="Inter,Arial,sans-serif" font-size="20" fill="#94a3b8">REACH</text>
+ <text x="38" y="112" font-family="Inter,Arial,sans-serif" font-size="54" fill="#fff" font-weight="800">1.28M</text>
+ <text x="345" y="48" font-family="Inter,Arial,sans-serif" font-size="20" fill="#94a3b8">SAVES</text>
+ <text x="345" y="112" font-family="Inter,Arial,sans-serif" font-size="54" fill="#fff" font-weight="800">42.6K</text>
+ <text x="662" y="48" font-family="Inter,Arial,sans-serif" font-size="20" fill="#94a3b8">CTR</text>
+ <text x="662" y="112" font-family="Inter,Arial,sans-serif" font-size="54" fill="#fff" font-weight="800">7.4%</text>
+</g>
+<g transform="translate(82 452)">
+ <rect width="916" height="500" rx="30" fill="#ffffff" opacity=".045" stroke="#ffffff" stroke-opacity=".09"/>
+ <text x="42" y="58" font-family="Inter,Arial,sans-serif" font-size="22" fill="#cbd5e1">Engagement by format</text>
+ <rect x="130" y="174.4" width="74" height="138.6" rx="18" fill="url(#cyan)" opacity="0.68"/><rect x="255" y="95.2" width="74" height="217.8" rx="18" fill="url(#cyan)" opacity="0.73"/><rect x="380" y="134.8" width="74" height="178.2" rx="18" fill="url(#cyan)" opacity="0.78"/><rect x="505" y="42.4" width="74" height="270.6" rx="18" fill="url(#cyan)" opacity="0.83"/><rect x="630" y="68.8" width="74" height="244.2" rx="18" fill="url(#cyan)" opacity="0.88"/><rect x="755" y="16.2" width="74" height="296.8" rx="18" fill="url(#cyan)" opacity="0.93"/>
+ <line x1="76" y1="313" x2="842" y2="313" stroke="#64748b" stroke-width="2" opacity=".45"/>
+ <text x="118" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Mon</text>
+ <text x="243" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Tue</text>
+ <text x="368" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Wed</text>
+ <text x="493" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Thu</text>
+ <text x="618" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Fri</text>
+ <text x="743" y="366" font-family="Inter,Arial,sans-serif" font-size="18" fill="#94a3b8">Sat</text>
+</g>
+
+</svg>

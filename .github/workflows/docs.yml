@@ -1,0 +1,52 @@
+name: docs
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - "examples/**"
+      - "scripts/check_docs.py"
+      - "pyproject.toml"
+      - "postcanvas/__init__.py"
+      - ".github/workflows/docs.yml"
+  push:
+    branches:
+      - main
+      - "docs/**"
+    paths:
+      - "README.md"
+      - "docs/**"
+      - "examples/**"
+      - "scripts/check_docs.py"
+      - "pyproject.toml"
+      - "postcanvas/__init__.py"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install package and documentation extras
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[yaml,typography]"
+      - name: Validate documentation and examples
+        run: python scripts/check_docs.py
+      - name: Render documentation smoke example
+        run: python examples/editorial_poster.py
+      - name: Upload rendered documentation preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: postcanvas-documentation-preview
+          path: output/examples/editorial/
+          if-no-files-found: error

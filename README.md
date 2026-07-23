@@ -1,247 +1,363 @@
-# postcanvas 🎨
+<p align="center">
+  <img src="docs/assets/hero.svg" alt="Postcanvas 1.0 — responsive social graphics built like software" width="100%">
+</p>
 
-> Generate pixel-perfect social-media images from Python — just describe what you want.
+<h1 align="center">postcanvas</h1>
 
-## Install
+<p align="center">
+  Generate responsive, validated, brand-consistent social graphics from Python.
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/postcanvas/"><img alt="PyPI" src="https://img.shields.io/pypi/v/postcanvas?style=flat-square"></a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%E2%80%933.13-3776ab?style=flat-square">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square">
+  <img alt="Status" src="https://img.shields.io/badge/release-1.0.0-8b5cf6?style=flat-square">
+</p>
+
+Postcanvas is a declarative rendering engine for social-media images, launch graphics, carousels, dashboards, thumbnails, Open Graph images, and reusable content templates. It combines Pillow rendering with Pydantic models, responsive layout primitives, platform profiles, and preflight validation.
 
 ```bash
 pip install postcanvas
 ```
 
-## Documentation
+For YAML templates and dictionary hyphenation:
 
-- docs/README.md
-- docs/getting-started.md
-- docs/config-reference.md
-- docs/renderer-architecture.md
-- docs/examples.md
+```bash
+pip install "postcanvas[yaml,typography]"
+```
+
+## Why postcanvas
+
+Most image-generation scripts are a pile of coordinates. Postcanvas treats graphics as a system:
+
+- **Responsive typography** that wraps, balances, shrinks, truncates, clips, preserves paragraphs, supports RTL/CJK/emoji, and detects overflow.
+- **Reusable template trees** with rows, columns, grids, overlays, alignment, conditionals, repeaters, safe-area containers, inheritance, fixtures, and theme tokens.
+- **Production validation** for collisions, bounds, safe areas, platform UI zones, contrast, missing fonts, text overflow, and output file size.
+- **Rich visual primitives** including gradients, images, focal-point crops, shapes, nested text, filters, blend modes, shadows, tables, and charts.
+- **Multi-platform output** through built-in profiles for Instagram, TikTok, LinkedIn, X, YouTube, Facebook, Reddit, blogs, and custom canvases.
+- **Automation-friendly results** as paths, PIL images, bytes, detailed reports, or reusable serialized templates.
+
+## Gallery
+
+<table>
+<tr>
+<td width="50%"><img src="docs/assets/editorial-poster.svg" alt="Editorial social poster example"></td>
+<td width="50%"><img src="docs/assets/analytics-dashboard.svg" alt="Analytics dashboard example"></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/assets/story-launch.svg" alt="Story launch graphic example"></td>
+<td width="50%"><img src="docs/assets/validation-report.svg" alt="Layout validation report example"></td>
+</tr>
+</table>
+
+<p align="center">
+  <img src="docs/assets/carousel-strip.svg" alt="Four-slide carousel system" width="100%">
+</p>
+
+See the [full gallery and source map](docs/gallery.md).
 
 ## Quick start
 
 ```python
-from postcanvas import generate
-from postcanvas.presets import instagram_post
-from postcanvas.models import BackgroundConfig, TextConfig, ShadowConfig
-
-post = instagram_post(
-    background=BackgroundConfig(color="#1a1a2e"),
-    texts=[
-        TextConfig(
-            content="Hello World!",
-            y="50%",
-            font_size=96,
-            color="#e94560",
-            shadow=ShadowConfig(blur_radius=12),
-        )
-    ],
-    output_dir="./output",
-)
-
-generate(post)   # → ./output/post.png
-```
-
-## Cloud Storage & Return Raw Images
-
-Generate images without saving to disk for direct cloud uploads:
-
-```python
-from postcanvas import generate, image_to_bytes, GenerateResult
-from postcanvas.models import OutputFormat
-
-# Get raw PIL Images without saving to disk
-images = generate(post, save=False, return_images=True)
-
-# Convert to bytes for cloud storage
-for img in images:
-    data = image_to_bytes(img, format=OutputFormat.PNG)
-    # s3_client.put_object(Bucket='bucket', Key='image.png', Body=data)
-
-# Or save to custom locations
-from postcanvas import save_image_to_path
-save_image_to_path(images[0], "./custom/path/image.png")
-
-# Get both: save locally AND return images
-result = generate(post, save=True, return_images=True)  # Returns GenerateResult
-print(result.paths)    # List of saved file paths
-print(result.images)   # List of PIL Image objects
-```
-
-### Generate Parameters & Return Types
-
-```python
-generate(
-    post,
-    save=True,              # Save to disk
-    return_images=False     # Return PIL Image objects
-)
-```
-
-**Return types:**
-- `save=True, return_images=False` (default) → `List[str]` (file paths only)
-- `save=False, return_images=True` → `List[Image.Image]` (PIL Images only)
-- `save=True, return_images=True` → `GenerateResult` (consistent dataclass with both)
-
-**Error handling:**
-- `save=False, return_images=False` → raises `ValueError` (must specify at least one output type)
-
-## Platforms & formats
-
-| Helper | Size |
-|---|---|
-| `instagram_post()` | 1080 × 1080 |
-| `instagram_portrait()` | 1080 × 1350 |
-| `instagram_story()` | 1080 × 1920 |
-| `x_post()` | 1600 × 900 |
-| `reddit_post()` | 1920 × 1080 |
-| `blog_og()` | 1200 × 628 |
-| `linkedin_post()` | 1080 × 1080 |
-| `youtube_thumbnail()` | 1280 × 720 |
-| `facebook_post()` | 1080 × 1080 |
-| `tiktok_story()` | 1080 × 1920 |
-
-Use `preset(Platform.CUSTOM, PostFormat.CUSTOM, width=800, height=600)` for custom sizes.
-
-## Carousel / multi-image
-
-```python
-from postcanvas.models import CanvasConfig, BackgroundConfig
-
-post = instagram_post(
-    canvases=[
-        CanvasConfig(background=BackgroundConfig(color="#e94560"),
-                     texts=[TextConfig(content="Slide 1", ...)]),
-        CanvasConfig(background=BackgroundConfig(color="#0f3460"),
-                     texts=[TextConfig(content="Slide 2", ...)]),
-    ]
-)
-```
-
-## Key model reference
-
-### `PostConfig` (root)
-| Field | Type | Description |
-|---|---|---|
-| `platform` | `Platform` | Target platform |
-| `width` / `height` | `int` | Canvas size in px |
-| `background` | `BackgroundConfig` | Global background |
-| `padding` | `PaddingConfig` | Safe-area insets |
-| `texts` | `List[TextConfig]` | Global text elements |
-| `images` | `List[ImageElementConfig]` | Global image elements |
-| `shapes` | `List[ShapeConfig]` | Global shapes |
-| `tables` | `List[TableElementConfig]` | Global table elements |
-| `charts` | `List[ChartElementConfig]` | Global chart elements |
-| `canvases` | `List[CanvasConfig]` | Slides (carousel) |
-| `watermark` | `WatermarkConfig` | Applied to every slide |
-| `output_dir` | `str` | Where to save files |
-| `output_format` | `OutputFormat` | `png` / `jpeg` / `webp` |
-
-### Positioning
-Every `x`, `y`, `width`, `height` accepts:
-- **Absolute pixels**: `540`, `200`
-- **Relative string**: `"50%"`, `"80%"`
-
-### Anchors
-`anchor` can be: `topleft`, `topcenter`, `topright`, `left`, `center`,
-`right`, `bottomleft`, `bottomcenter`, `bottomright`
-
-### z_index
-Elements are composited in ascending `z_index` order across all types
-(shapes, images, tables, charts, texts).
-Default values: shapes=1, images=5, tables=6, charts=7, texts=10.
-
-### Tables and charts
-
-```python
+from postcanvas import render
 from postcanvas.models import (
-    TextAlign,
-    TableCellAlignmentConfig,
-    TableElementConfig,
-    ChartElementConfig,
-    ChartSeriesConfig,
-    ChartType,
+    BackgroundConfig,
+    GradientConfig,
+    GradientStop,
+    LayoutPolicyConfig,
+    TextConfig,
 )
+from postcanvas.presets import instagram_portrait
 
-tables = [
-    TableElementConfig(
-        headers=["Metric", "Jan", "Feb", "Mar"],
-        rows=[
-            ["Reach", "28K", "31K", "37K"],
-            ["Saves", "940", "1106", "1483"],
-        ],
-        text_align=TextAlign.LEFT,
-        column_alignments=[TextAlign.LEFT, TextAlign.CENTER, TextAlign.CENTER, TextAlign.CENTER],
-        cell_alignments=[
-            TableCellAlignmentConfig(section="header", row=0, col=0, align=TextAlign.LEFT),
-            TableCellAlignmentConfig(section="body", row=1, col=3, align=TextAlign.RIGHT),
-        ],
-        x="50%", y="56%", width="88%", height="52%", anchor="center",
-    )
-]
-
-charts = [
-    ChartElementConfig(
-        type=ChartType.BAR,
-        labels=["Reels", "Carousel", "Static"],
-        series=[
-            ChartSeriesConfig(name="Current", values=[8.9, 7.2, 4.1]),
-            ChartSeriesConfig(name="Previous", values=[6.2, 5.8, 3.4]),
-        ],
-        x="50%", y="56%", width="90%", height="60%", anchor="center",
-    )
-]
-```
-
-Supported chart types: `ChartType.BAR` and `ChartType.LINE`.
-
-### Text inside images and shapes
-Both `ImageElementConfig` and `ShapeConfig` now support a `texts` list:
-
-```python
-from postcanvas.models import ImageElementConfig, ShapeConfig, ShapeType, TextConfig
-
-ShapeConfig(
-    type=ShapeType.ROUNDED_RECTANGLE,
-    x="50%", y="35%", width="70%", height="30%", anchor="center",
-    fill_color="#1f3b4d",
-    texts=[
-        TextConfig(content="Inside Shape", x="50%", y="50%", anchor="center")
-    ],
-)
-
-ImageElementConfig(
-    src="assets/photo.jpg",
-    x="50%", y="70%", width="60%", height="35%", anchor="center",
-    texts=[
-        TextConfig(content="Inside Image", x="50%", y="88%", anchor="bottomcenter")
-    ],
-)
-```
-
-Nested text coordinates are resolved relative to the element's own box, not the full canvas.
-
-### Font inheritance (Post > Canvas > Text override)
-You can define default text font at post level, override it per canvas, and still override per text:
-
-```python
-from postcanvas.presets import instagram_post
-from postcanvas.models import CanvasConfig, TextConfig
-
-post = instagram_post(
-    text_font_path="Roboto/static/Roboto-Regular.ttf",   # default for whole post
-    texts=[
-        TextConfig(content="Uses post default", x="50%", y="15%"),
-        TextConfig(content="Custom text font", x="50%", y="25%", font_path="Roboto/static/Roboto-Bold.ttf"),
-    ],
-    canvases=[
-        CanvasConfig(
-            text_font_path="Roboto/static/Roboto-Italic.ttf",  # overrides post default on this slide
-            texts=[
-                TextConfig(content="Uses canvas override", x="50%", y="50%"),
-                TextConfig(content="Text-level still wins", x="50%", y="60%", font_path="Roboto/static/Roboto-Medium.ttf"),
+post = instagram_portrait(
+    background=BackgroundConfig(
+        gradient=GradientConfig(
+            type="linear",
+            angle=135,
+            stops=[
+                GradientStop(color="#090b17", position=0),
+                GradientStop(color="#25113f", position=0.55),
+                GradientStop(color="#0c2f3d", position=1),
             ],
         )
+    ),
+    layout_policy=LayoutPolicyConfig(
+        collision="error",
+        canvas_bounds="error",
+        safe_area="error",
+        exclusion_zones="error",
+        text_overflow="error",
+        contrast="warn",
+    ),
+    texts=[
+        TextConfig(
+            id="headline",
+            collision_group="content",
+            content="Design once.\nAdapt everywhere.",
+            x="8%",
+            y="18%",
+            width="84%",
+            height="34%",
+            anchor="topleft",
+            font_size=108,
+            min_font_size=42,
+            max_lines=4,
+            fit="shrink",
+            overflow="ellipsis",
+            wrap_mode="balanced",
+            align="left",
+            color="#FFFFFF",
+        ),
+        TextConfig(
+            id="caption",
+            collision_group="content",
+            content="Responsive social graphics from Python.",
+            x="8%",
+            y="78%",
+            width="72%",
+            height="10%",
+            anchor="topleft",
+            font_size=34,
+            min_font_size=24,
+            fit="shrink",
+            color="#C4B5FD",
+        ),
     ],
+)
+
+result = render(post)
+result.images[0].save("portrait.png")
+print(result.reports[0].issues)
+```
+
+`render()` always returns images, paths, and validation reports. `generate()` preserves the simpler legacy return contract.
+
+## Capability overview
+
+| Area | Highlights |
+|---|---|
+| Typography | bounded text, shrink-to-fit, balanced wrapping, ellipsis, clipping, paragraphs, widow control, transforms, decorations, auto contrast, font fallback, variable fonts, RTL/CJK/emoji |
+| Rich text | independently styled spans, mixed font scales, backgrounds, stroke, shadow, decoration, indentation, hyphenation |
+| Layout | absolute/percentage dimensions, anchors, z-index, rows, columns, grids, overlays, groups, alignment, conditionals, repeaters, aspect ratios |
+| Media | local or remote images, cover/contain/fill/center, manual or automatic focal points, borders, radius, filters, brightness, contrast, saturation |
+| Drawing | rectangles, rounded rectangles, circles, ellipses, lines, triangles, polygons, stars, gradients, shadows, nested text |
+| Data | styled tables, per-column/per-cell alignment, grouped bar charts, line charts, legends, labels and palettes |
+| Templates | variants, inheritance, required slots, content thresholds, theme tokens, JSON/YAML, preview fixtures, assisted selection |
+| Validation | collisions, canvas bounds, safe areas, UI exclusion zones, text overflow, contrast, fonts, file-size limits |
+| Output | PNG/JPEG/WebP, carousels, PIL images, bytes, cloud pipelines, metadata, watermarks, filters |
+| Platforms | Instagram, TikTok, LinkedIn, X, Facebook, YouTube, Reddit, blog/Open Graph, custom profiles |
+
+## Documentation index
+
+### Start here
+
+- [Documentation home](docs/README.md)
+- [Getting started](docs/getting-started.md)
+- [Core concepts](docs/concepts.md)
+- [Examples cookbook](docs/examples.md)
+- [Gallery](docs/gallery.md)
+
+### Design and rendering
+
+- [Typography](docs/typography.md)
+- [Rich text](docs/rich-text.md)
+- [Backgrounds and images](docs/backgrounds-images.md)
+- [Shapes, effects and compositing](docs/shapes-effects.md)
+- [Tables and charts](docs/tables-charts.md)
+- [Carousels and multi-canvas posts](docs/carousels.md)
+
+### Systems and production
+
+- [Templates and responsive layout](docs/templates.md)
+- [Validation and accessibility](docs/validation.md)
+- [Platform profiles](docs/platform-profiles.md)
+- [Output, bytes and cloud storage](docs/output-cloud.md)
+- [Assisted variant selection](docs/assisted-selection.md)
+- [Renderer architecture](docs/renderer-architecture.md)
+
+### Reference
+
+- [Configuration reference](docs/config-reference.md)
+- [API reference](docs/api-reference.md)
+- [Migration to 1.0](docs/migration-1.0.md)
+- [Example source directory](examples/README.md)
+
+## Minimal APIs
+
+### Render with reports
+
+```python
+from postcanvas import render
+
+result = render(post, save=False)
+image = result.images[0]
+warnings = result.warnings
+```
+
+### Generate files
+
+```python
+from postcanvas import generate
+
+paths = generate(post)
+```
+
+### Return raw images
+
+```python
+images = generate(post, save=False, return_images=True)
+```
+
+### Return both paths and images
+
+```python
+result = generate(post, save=True, return_images=True)
+print(result.paths)
+print(result.images)
+print(result.reports)
+```
+
+### Convert to bytes
+
+```python
+from postcanvas import image_to_bytes
+from postcanvas.models import OutputFormat
+
+payload = image_to_bytes(result.images[0], format=OutputFormat.WEBP, quality=90)
+```
+
+## Built-in sizes
+
+```python
+from postcanvas.presets import list_profiles
+
+for profile in list_profiles():
+    print(profile.name, profile.width, profile.height)
+```
+
+Common helpers include:
+
+- `instagram_post()`
+- `instagram_portrait()`
+- `instagram_story()`
+- `instagram_reel_cover()`
+- `tiktok_story()`
+- `linkedin_post()`
+- `x_post()` and `x_banner()`
+- `youtube_thumbnail()` and `youtube_banner()`
+- `facebook_post()`
+- `reddit_post()`
+- `blog_og()` and `blog_cover()`
+
+Profiles can include safe-area insets, platform UI exclusion zones, crop metadata, recommended formats, and file-size limits.
+
+<p align="center">
+  <img src="docs/assets/platform-pack.svg" alt="Postcanvas platform profile pack" width="100%">
+</p>
+
+## Template example
+
+```python
+from postcanvas import LayoutNode, Template, TemplateVariant, Theme
+
+template = Template(
+    name="launch-system",
+    theme=Theme(
+        colors={
+            "text": "#FFFFFF",
+            "accent": "#A78BFA",
+            "surface": "#111827",
+        },
+        spacing={"sm": 16, "md": 32, "lg": 56},
+        text_styles={
+            "display": {
+                "font_size": 104,
+                "min_font_size": 40,
+                "fit": "shrink",
+                "wrap_mode": "balanced",
+            }
+        },
+    ),
+    variants={
+        "portrait": TemplateVariant(
+            profile="instagram_portrait",
+            required_slots=["headline"],
+            root=LayoutNode(
+                kind="column",
+                gap="md",
+                children=[
+                    LayoutNode(
+                        kind="text",
+                        name="eyebrow",
+                        basis=54,
+                        color="#C4B5FD",
+                    ),
+                    LayoutNode(
+                        kind="text",
+                        name="headline",
+                        grow=2,
+                        text_style="display",
+                        max_lines=4,
+                    ),
+                    LayoutNode(
+                        kind="image",
+                        name="hero",
+                        grow=3,
+                        image_fit="cover",
+                        focal_mode="auto",
+                        border_radius=30,
+                    ),
+                    LayoutNode(
+                        kind="text",
+                        name="cta",
+                        basis=86,
+                        background_color="#FFFFFF",
+                        color="#111827",
+                    ),
+                ],
+            ),
+        )
+    },
+)
+
+result = template.render(
+    {
+        "eyebrow": "POSTCANVAS 1.0",
+        "headline": "A content system that scales.",
+        "hero": "assets/product.jpg",
+        "cta": "Read the launch notes →",
+    }
 )
 ```
 
-Precedence: `TextConfig` > `CanvasConfig` > `PostConfig` > internal Arial fallback.
+<p align="center">
+  <img src="docs/assets/template-pipeline.svg" alt="Template content-to-render pipeline" width="100%">
+</p>
+
+## Examples
+
+The [`examples/`](examples/) directory includes complete scripts for:
+
+- editorial posters and launch graphics
+- responsive rich text
+- analytics dashboards
+- multi-slide carousels
+- reusable templates and repeaters
+- platform packs
+- validation reports
+- cloud and byte-output workflows
+
+Run an example from the repository root:
+
+```bash
+python examples/editorial_poster.py
+```
+
+## Stability policy
+
+Version 1.0 marks the public configuration, rendering, template, validation, and output APIs as stable. New features should be additive. Breaking model or behavior changes require a new major release and migration notes.
+
+## License
+
+MIT

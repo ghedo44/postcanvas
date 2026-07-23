@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="720" viewBox="0 0 1440 720" role="img">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#080b18"/>
+  <stop offset="0.52" stop-color="#17112f"/>
+  <stop offset="1" stop-color="#0b2132"/>
+</linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#8b5cf6"/>
+  <stop offset="1" stop-color="#ec4899"/>
+</linearGradient>
+<linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#22d3ee"/>
+  <stop offset="1" stop-color="#3b82f6"/>
+</linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+  <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000" flood-opacity=".35"/>
+</filter>
+<filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+  <feGaussianBlur stdDeviation="45"/>
+</filter>
+</defs>
+
+<rect width="1440" height="720" rx="36" fill="url(#bg)"/>
+<circle cx="220" cy="120" r="180" fill="#7c3aed" opacity=".16" filter="url(#soft)"/>
+<circle cx="1210" cy="590" r="210" fill="#06b6d4" opacity=".14" filter="url(#soft)"/>
+<g transform="translate(86 98)">
+  <rect x="0" y="0" width="134" height="40" rx="20" fill="#ffffff" opacity=".09"/>
+  <text x="22" y="27" font-family="Inter,Arial,sans-serif" font-size="17" fill="#d8b4fe" font-weight="700">POSTCANVAS 1.0</text>
+  <text x="0" y="112" font-family="Inter,Arial,sans-serif" font-size="72" fill="#ffffff" font-weight="800">Social graphics,</text>
+  <text x="0" y="192" font-family="Inter,Arial,sans-serif" font-size="72" fill="#ffffff" font-weight="800">built like software.</text>
+  <text x="2" y="245" font-family="Inter,Arial,sans-serif" font-size="25" fill="#b8c0d9">Responsive layouts · validation · templates · charts · rich text</text>
+  <rect x="0" y="292" width="230" height="62" rx="18" fill="url(#violet)"/>
+  <text x="35" y="332" font-family="Inter,Arial,sans-serif" font-size="22" fill="#fff" font-weight="700">pip install postcanvas</text>
+  <g transform="translate(0 406)">
+    <rect width="472" height="142" rx="24" fill="#ffffff" opacity=".055" stroke="#ffffff" stroke-opacity=".11"/>
+    <text x="28" y="38" font-family="ui-monospace,monospace" font-size="17" fill="#a5f3fc">post = instagram_portrait(</text>
+    <text x="48" y="70" font-family="ui-monospace,monospace" font-size="17" fill="#ddd6fe">texts=[TextConfig(... fit=&quot;shrink&quot;)],</text>
+    <text x="48" y="102" font-family="ui-monospace,monospace" font-size="17" fill="#fbcfe8">layout_policy=LayoutPolicyConfig(...),</text>
+    <text x="28" y="132" font-family="ui-monospace,monospace" font-size="17" fill="#a5f3fc">)</text>
+  </g>
+</g>
+<g transform="translate(790 72)" filter="url(#shadow)">
+  <g transform="rotate(-6 180 270)">
+    <rect width="350" height="468" rx="34" fill="#fff"/>
+    <rect x="20" y="20" width="310" height="286" rx="25" fill="url(#cyan)"/>
+    <circle cx="262" cy="88" r="54" fill="#fff" opacity=".25"/>
+    <text x="42" y="352" font-family="Inter,Arial,sans-serif" font-size="38" fill="#111827" font-weight="800">Move fast.</text>
+    <text x="42" y="396" font-family="Inter,Arial,sans-serif" font-size="38" fill="#111827" font-weight="800">Stay on brand.</text>
+    <rect x="42" y="424" width="124" height="10" rx="5" fill="#8b5cf6"/>
+  </g>
+  <g transform="translate(270 116) rotate(7 150 230)">
+    <rect width="302" height="420" rx="32" fill="#131a2b" stroke="#ffffff" stroke-opacity=".12"/>
+    <text x="28" y="58" font-family="Inter,Arial,sans-serif" font-size="20" fill="#94a3b8">WEEKLY GROWTH</text>
+    <text x="28" y="112" font-family="Inter,Arial,sans-serif" font-size="56" fill="#fff" font-weight="800">+38%</text>
+    <rect x="28" y="154" width="246" height="182" rx="20" fill="#ffffff" opacity=".06"/>
+    <path d="M48 292 C92 278 104 242 138 248 S190 182 252 190" fill="none" stroke="#22d3ee" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="252" cy="190" r="10" fill="#22d3ee"/>
+    <rect x="28" y="362" width="156" height="14" rx="7" fill="#ffffff" opacity=".15"/>
+  </g>
+</g>
+
+</svg>
