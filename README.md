@@ -10,9 +10,9 @@
 
 <p align="center">
   <a href="https://pypi.org/project/postcanvas/"><img alt="PyPI" src="https://img.shields.io/pypi/v/postcanvas?style=flat-square"></a>
-  <img alt="Python" src="https://img.shields.io/badge/python-3.10%E2%80%933.13-3776ab?style=flat-square">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%E2%80%933.14-3776ab?style=flat-square">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square">
-  <img alt="Status" src="https://img.shields.io/badge/release-1.0.0-8b5cf6?style=flat-square">
+  <img alt="Status" src="https://img.shields.io/badge/release-1.0.1-8b5cf6?style=flat-square">
 </p>
 
 Postcanvas is a declarative rendering engine for social-media images, launch graphics, carousels, dashboards, thumbnails, Open Graph images, and reusable content templates. It combines Pillow rendering with Pydantic models, responsive layout primitives, platform profiles, and preflight validation.

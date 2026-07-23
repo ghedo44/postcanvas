@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Python 3.10–3.13
+- Python 3.10–3.14
 - Pillow-compatible fonts for custom typography
 - Network access only when you use remote image URLs
 

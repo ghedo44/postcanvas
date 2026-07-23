@@ -4,11 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "postcanvas"
-version = "1.0.0"
+version = "1.0.1"
 description = "Generate responsive, validated social graphics and reusable templates from Python"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Multimedia :: Graphics",
+]
 keywords = ["social media", "image generation", "responsive design", "templates", "pillow", "pydantic"]
 dependencies = [
     "Pillow>=12.0",
