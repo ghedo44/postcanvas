@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="850" viewBox="0 0 1400 850" role="img">
+<defs><linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs>
+<rect width="1400" height="850" rx="36" fill="#0a1020"/>
+<text x="72" y="84" font-family="Inter,Arial,sans-serif" font-size="34" fill="#fff" font-weight="800">Layout validation before pixels ship</text>
+<g transform="translate(72 142)" font-family="Inter,Arial,sans-serif">
+ <rect width="1256" height="610" rx="32" fill="#ffffff" opacity=".05" stroke="#ffffff" stroke-opacity=".1"/>
+ <rect x="38" y="38" width="1180" height="88" rx="22" fill="#101a2e"/>
+ <circle cx="78" cy="82" r="13" fill="#4ade80"/>
+ <text x="110" y="90" font-size="24" fill="#e2e8f0" font-weight="700">instagram_story · 1080 × 1920</text><text x="1000" y="90" font-size="20" fill="#4ade80">READY</text>
+ <g transform="translate(38 158)"><rect width="360" height="170" rx="24" fill="#111827"/><text x="28" y="42" font-size="18" fill="#94a3b8">TEXT FIT</text><text x="28" y="94" font-size="44" fill="#fff" font-weight="800">48 px</text><text x="28" y="132" font-size="18" fill="#4ade80">No overflow</text></g>
+ <g transform="translate(428 158)"><rect width="360" height="170" rx="24" fill="#111827"/><text x="28" y="42" font-size="18" fill="#94a3b8">CONTRAST</text><text x="28" y="94" font-size="44" fill="#fff" font-weight="800">8.2 : 1</text><text x="28" y="132" font-size="18" fill="#4ade80">WCAG-friendly</text></g>
+ <g transform="translate(818 158)"><rect width="400" height="170" rx="24" fill="#111827"/><text x="28" y="42" font-size="18" fill="#94a3b8">PLATFORM UI</text><text x="28" y="94" font-size="44" fill="#fff" font-weight="800">Clear</text><text x="28" y="132" font-size="18" fill="#4ade80">Exclusion zones respected</text></g>
+ <rect x="38" y="360" width="1180" height="202" rx="24" fill="#101a2e"/>
+ <text x="72" y="408" font-size="20" fill="#cbd5e1">Checks</text>
+ <text x="72" y="452" font-size="19" fill="#94a3b8">✓ canvas bounds      ✓ safe area      ✓ collisions      ✓ missing fonts</text>
+ <text x="72" y="494" font-size="19" fill="#94a3b8">✓ exclusion zones   ✓ contrast       ✓ text overflow   ✓ output file size</text>
+ <rect x="72" y="526" width="1094" height="10" rx="5" fill="#1f2937"/><rect x="72" y="526" width="1094" height="10" rx="5" fill="url(#cyan)"/>
+</g>
+</svg>
