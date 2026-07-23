@@ -1,54 +1,86 @@
 from __future__ import annotations
-from typing import List, Optional
-from pydantic import BaseModel, Field
-from .enums import TextAlign, FontWeight, BlendMode, TextTransform, Dimension
-from .primitives import ShadowConfig, StrokeConfig, FilterConfig
+
+from typing import List, Literal, Optional
+
+from pydantic import BaseModel, Field, model_validator
+
+from .enums import BlendMode, Dimension, FontWeight, TextAlign, TextTransform
+from .primitives import FilterConfig, ShadowConfig, StrokeConfig
+
+TextFit = Literal["none", "shrink", "truncate", "error"]
+TextOverflow = Literal["visible", "clip", "ellipsis", "error"]
+TextWrapMode = Literal["greedy", "balanced"]
+TextDirection = Literal["ltr", "rtl", "ttb"]
+TextDecoration = Literal["none", "underline", "strikethrough"]
+
 
 class TextConfig(BaseModel):
     content: str
+    id: Optional[str] = None
+    collision_group: Optional[str] = None
+    allow_overlap_with: List[str] = Field(default_factory=list)
 
-    # Position  (absolute px or "50%")
+    # Position and optional bounded text box.
     x: Dimension = "50%"
     y: Dimension = "50%"
+    width: Optional[Dimension] = None
+    height: Optional[Dimension] = None
+    max_width: Optional[Dimension] = None
+    max_height: Optional[Dimension] = None
 
-    # Font
-    font_family:  Optional[str]   = None    # None = inherit (or fallback to Arial)
-    font_path:    Optional[str]   = None    # path to .ttf/.otf
-    font_size:    int             = 48
-    font_weight:  FontWeight      = FontWeight.REGULAR
-    italic:       bool            = False
+    # Font.
+    font_family: Optional[str] = None
+    font_path: Optional[str] = None
+    font_fallback_paths: List[str] = Field(default_factory=list)
+    font_size: int = Field(default=48, ge=1)
+    min_font_size: int = Field(default=12, ge=1)
+    font_weight: FontWeight = FontWeight.REGULAR
+    italic: bool = False
 
-    # Style
-    color:          str             = "#FFFFFF"
-    align:          TextAlign       = TextAlign.CENTER
-    vertical_align: str             = "top"         # top | middle | bottom
-    transform:      TextTransform   = TextTransform.NONE
-    max_width:      Optional[Dimension] = None       # text wrapping boundary
-    line_spacing:   float           = 1.3
-    letter_spacing: int             = 0
-    auto_contrast:  bool            = False          # adapt text against background under each line
-    contrast_light_color: str       = "#FFFFFF"     # used on dark background
-    contrast_dark_color:  str       = "#111111"     # used on light background
-    contrast_threshold:   int       = Field(default=145, ge=0, le=255)
+    # Responsive fitting and wrapping.
+    fit: TextFit = "none"
+    overflow: TextOverflow = "visible"
+    wrap_mode: TextWrapMode = "greedy"
+    max_lines: Optional[int] = Field(default=None, ge=1)
+    break_long_words: bool = True
+    preserve_newlines: bool = True
 
-    # Decorations
-    shadow:               Optional[ShadowConfig] = None
-    stroke:               Optional[StrokeConfig] = None
-    background_color:     Optional[str]          = None  # highlight/pill bg
-    background_padding:   int                    = 10
-    background_radius:    float                  = 6.0
+    # Style.
+    color: str = "#FFFFFF"
+    align: TextAlign = TextAlign.CENTER
+    vertical_align: Literal["top", "middle", "bottom"] = "top"
+    transform: TextTransform = TextTransform.NONE
+    line_spacing: float = Field(default=1.3, gt=0)
+    paragraph_spacing: float = Field(default=0.0, ge=0)
+    letter_spacing: int = 0
+    word_spacing: int = 0
+    decoration: TextDecoration = "none"
+    language: Optional[str] = None
+    direction: Optional[TextDirection] = None
+    features: List[str] = Field(default_factory=list)
+    auto_contrast: bool = False
+    contrast_light_color: str = "#FFFFFF"
+    contrast_dark_color: str = "#111111"
+    contrast_threshold: int = Field(default=145, ge=0, le=255)
 
-    # Compositing
-    opacity:    float     = Field(default=1.0, ge=0.0, le=1.0)
-    rotation:   float     = 0.0
+    # Decorations.
+    shadow: Optional[ShadowConfig] = None
+    stroke: Optional[StrokeConfig] = None
+    background_color: Optional[str] = None
+    background_padding: int = Field(default=10, ge=0)
+    background_radius: float = Field(default=6.0, ge=0)
+
+    # Compositing.
+    opacity: float = Field(default=1.0, ge=0.0, le=1.0)
+    rotation: float = 0.0
     blend_mode: BlendMode = BlendMode.NORMAL
-    z_index:    int       = 10
-    visible:    bool      = True
-
-    # Anchor point for x/y position
-    # Options: topleft | topcenter | topright | left | center | right
-    #          bottomleft | bottomcenter | bottomright
+    z_index: int = 10
+    visible: bool = True
     anchor: str = "center"
-
-    # Per-element filters
     filters: List[FilterConfig] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_text_fit(self) -> "TextConfig":
+        if self.min_font_size > self.font_size:
+            raise ValueError("min_font_size cannot exceed font_size")
+        return self

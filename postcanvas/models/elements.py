@@ -1,243 +1,233 @@
 from __future__ import annotations
-from typing import List, Optional, Tuple, Literal
+
+from typing import List, Literal, Optional, Tuple
+
 from pydantic import BaseModel, Field, model_validator
-from .enums import ImageFit, BlendMode, ShapeType, ChartType, TextAlign, Dimension
-from .primitives import ShadowConfig, BorderConfig, FilterConfig, GradientConfig
+
+from .enums import (
+    BlendMode,
+    ChartType,
+    Dimension,
+    ImageFit,
+    ShapeType,
+    TextAlign,
+)
+from .primitives import BorderConfig, FilterConfig, GradientConfig, ShadowConfig
 from .text import TextConfig
 
-class ImageElementConfig(BaseModel):
-    src: str                                 # local path or URL
 
-    # Position & size
-    x:      Dimension         = "50%"
-    y:      Dimension         = "50%"
-    width:  Optional[Dimension] = None       # None = intrinsic
+class LayoutElementConfig(BaseModel):
+    """Shared metadata used by layout validation and template composition."""
+
+    id: Optional[str] = None
+    collision_group: Optional[str] = None
+    allow_overlap_with: List[str] = Field(default_factory=list)
+
+
+class ImageElementConfig(LayoutElementConfig):
+    src: str
+
+    x: Dimension = "50%"
+    y: Dimension = "50%"
+    width: Optional[Dimension] = None
     height: Optional[Dimension] = None
-    fit:    ImageFit          = ImageFit.CONTAIN
-    anchor: str               = "center"
+    fit: ImageFit = ImageFit.CONTAIN
+    anchor: str = "center"
+    focal_x: float = Field(default=0.5, ge=0.0, le=1.0)
+    focal_y: float = Field(default=0.5, ge=0.0, le=1.0)
 
-    # Visual
-    border_radius:   float  = 0.0
-    opacity:         float  = Field(default=1.0, ge=0.0, le=1.0)
-    rotation:        float  = 0.0
-    flip_horizontal: bool   = False
-    flip_vertical:   bool   = False
-
-    # Adjustments (1.0 = neutral)
+    border_radius: float = 0.0
+    opacity: float = Field(default=1.0, ge=0.0, le=1.0)
+    rotation: float = 0.0
+    flip_horizontal: bool = False
+    flip_vertical: bool = False
     brightness: float = 1.0
-    contrast:   float = 1.0
+    contrast: float = 1.0
     saturation: float = 1.0
-
-    # Decorations
     shadow: Optional[ShadowConfig] = None
     border: Optional[BorderConfig] = None
-    texts:  List[TextConfig]       = Field(default_factory=list)
-
-    # Compositing
+    texts: List[TextConfig] = Field(default_factory=list)
     blend_mode: BlendMode = BlendMode.NORMAL
-    z_index:    int       = 5
-    visible:    bool      = True
-    filters:    List[FilterConfig] = Field(default_factory=list)
+    z_index: int = 5
+    visible: bool = True
+    filters: List[FilterConfig] = Field(default_factory=list)
 
-class ShapeConfig(BaseModel):
+
+class ShapeConfig(LayoutElementConfig):
     type: ShapeType = ShapeType.RECTANGLE
-
-    # Position & size
-    x:      Dimension = 0
-    y:      Dimension = 0
-    width:  Dimension = 100
+    x: Dimension = 0
+    y: Dimension = 0
+    width: Dimension = 100
     height: Dimension = 100
-    anchor: str       = "topleft"
-
-    # Fill
-    fill_color:     Optional[str]            = None
-    fill_gradient:  Optional[GradientConfig] = None
-
-    # Stroke
+    anchor: str = "topleft"
+    fill_color: Optional[str] = None
+    fill_gradient: Optional[GradientConfig] = None
     stroke_color: Optional[str] = None
-    stroke_width: int           = 0
-
-    # Shape-specific
-    border_radius: float              = 0.0       # ROUNDED_RECTANGLE
-    sides:         int                = 6         # POLYGON (regular)
-    star_points:   int                = 5         # STAR
-    star_inner_r:  float              = 0.4       # STAR inner ratio
-    points:        Optional[List[Tuple[float, float]]] = None  # POLYGON custom
-
-    # Compositing
-    opacity:    float     = Field(default=1.0, ge=0.0, le=1.0)
-    rotation:   float     = 0.0
+    stroke_width: int = 0
+    border_radius: float = 0.0
+    sides: int = 6
+    star_points: int = 5
+    star_inner_r: float = 0.4
+    points: Optional[List[Tuple[float, float]]] = None
+    opacity: float = Field(default=1.0, ge=0.0, le=1.0)
+    rotation: float = 0.0
     blend_mode: BlendMode = BlendMode.NORMAL
-    z_index:    int       = 1
-    visible:    bool      = True
-    shadow:     Optional[ShadowConfig] = None
-    texts:      List[TextConfig]       = Field(default_factory=list)
+    z_index: int = 1
+    visible: bool = True
+    shadow: Optional[ShadowConfig] = None
+    texts: List[TextConfig] = Field(default_factory=list)
+
 
 class TableCellAlignmentConfig(BaseModel):
-    """Targeted alignment override for a single table cell."""
-
     section: Literal["body", "header"] = "body"
     row: int = Field(default=0, ge=0)
     col: int = Field(ge=0)
     align: TextAlign
 
     @model_validator(mode="after")
-    def _validate_header_row(self) -> "TableCellAlignmentConfig":
+    def validate_header_row(self) -> "TableCellAlignmentConfig":
         if self.section == "header" and self.row != 0:
             raise ValueError("Header cell alignment overrides must use row=0.")
         return self
 
-class TableElementConfig(BaseModel):
-    # Data
+
+class TableElementConfig(LayoutElementConfig):
     headers: List[str] = Field(default_factory=list)
     rows: List[List[str | int | float]] = Field(default_factory=list)
     column_widths: Optional[List[float]] = None
-
-    # Position & size
-    x:      Dimension = "50%"
-    y:      Dimension = "50%"
-    width:  Dimension = "80%"
+    x: Dimension = "50%"
+    y: Dimension = "50%"
+    width: Dimension = "80%"
     height: Dimension = "45%"
-    anchor: str       = "center"
-
-    # Typography
-    font_family:      Optional[str] = None
-    font_path:        Optional[str] = None
-    font_size:        int           = 24
+    anchor: str = "center"
+    font_family: Optional[str] = None
+    font_path: Optional[str] = None
+    font_size: int = 24
     header_font_size: Optional[int] = None
-    text_align:       Optional[TextAlign] = None
-    cell_align:       TextAlign     = TextAlign.LEFT
-    header_align:     TextAlign     = TextAlign.CENTER
+    text_align: Optional[TextAlign] = None
+    cell_align: TextAlign = TextAlign.LEFT
+    header_align: TextAlign = TextAlign.CENTER
     column_alignments: Optional[List[TextAlign]] = None
     cell_alignments: List[TableCellAlignmentConfig] = Field(default_factory=list)
-
-    # Colors and framing
-    text_color:              str = "#0f172a"
-    header_text_color:       str = "#f8fafc"
-    background_color:        str = "rgba(248,250,252,0.92)"
+    text_color: str = "#0f172a"
+    header_text_color: str = "#f8fafc"
+    background_color: str = "rgba(248,250,252,0.92)"
     header_background_color: str = "#1e293b"
-    row_background_colors:   List[str] = Field(default_factory=lambda: [
-        "rgba(241,245,249,0.78)",
-        "rgba(226,232,240,0.78)",
-    ])
-    border_color:  str = "rgba(148,163,184,0.85)"
-    border_width:  int = 2
-    grid_color:    str = "rgba(148,163,184,0.55)"
-    grid_width:    int = 1
+    row_background_colors: List[str] = Field(
+        default_factory=lambda: [
+            "rgba(241,245,249,0.78)",
+            "rgba(226,232,240,0.78)",
+        ]
+    )
+    border_color: str = "rgba(148,163,184,0.85)"
+    border_width: int = 2
+    grid_color: str = "rgba(148,163,184,0.55)"
+    grid_width: int = 1
     border_radius: float = 14.0
-
-    # Layout controls
-    show_header:   bool                = True
-    cell_padding:  int                 = 12
-    row_height:    Optional[Dimension] = None
+    show_header: bool = True
+    cell_padding: int = 12
+    row_height: Optional[Dimension] = None
     header_height: Optional[Dimension] = None
-
-    # Compositing
-    opacity:    float     = Field(default=1.0, ge=0.0, le=1.0)
-    rotation:   float     = 0.0
+    opacity: float = Field(default=1.0, ge=0.0, le=1.0)
+    rotation: float = 0.0
     blend_mode: BlendMode = BlendMode.NORMAL
-    z_index:    int       = 6
-    visible:    bool      = True
-    shadow:     Optional[ShadowConfig] = None
+    z_index: int = 6
+    visible: bool = True
+    shadow: Optional[ShadowConfig] = None
 
     @model_validator(mode="after")
-    def _validate_alignment_overrides(self) -> "TableElementConfig":
-        col_count = max(len(self.headers), max((len(r) for r in self.rows), default=0))
+    def validate_alignment_overrides(self) -> "TableElementConfig":
+        column_count = max(
+            len(self.headers),
+            max((len(row) for row in self.rows), default=0),
+        )
         body_row_count = len(self.rows)
-
         if self.column_alignments is not None:
-            if col_count == 0:
-                raise ValueError("column_alignments cannot be used when no columns are defined.")
-            if len(self.column_alignments) != col_count:
+            if column_count == 0:
                 raise ValueError(
-                    f"column_alignments must contain exactly {col_count} values; got {len(self.column_alignments)}."
+                    "column_alignments cannot be used when no columns are defined."
                 )
-
-        for override in self.cell_alignments:
-            if col_count == 0:
-                raise ValueError("cell_alignments cannot be used when no columns are defined.")
-            if override.col >= col_count:
+            if len(self.column_alignments) != column_count:
                 raise ValueError(
-                    f"cell_alignments contains col={override.col}, but the table has {col_count} columns."
+                    "column_alignments must contain exactly "
+                    f"{column_count} values; got {len(self.column_alignments)}."
+                )
+        for override in self.cell_alignments:
+            if column_count == 0:
+                raise ValueError(
+                    "cell_alignments cannot be used when no columns are defined."
+                )
+            if override.col >= column_count:
+                raise ValueError(
+                    f"cell_alignments contains col={override.col}, but the table "
+                    f"has {column_count} columns."
                 )
             if override.section == "body" and override.row >= body_row_count:
                 raise ValueError(
-                    f"cell_alignments contains body row={override.row}, but the table has {body_row_count} body rows."
+                    f"cell_alignments contains body row={override.row}, but the "
+                    f"table has {body_row_count} body rows."
                 )
-
         return self
 
-class ChartSeriesConfig(BaseModel):
-    name:   Optional[str] = None
-    values: List[float]   = Field(default_factory=list)
-    color:  Optional[str] = None
 
-    # Applies to line charts (fallback to chart-level values when omitted)
-    line_width:   int = 3
+class ChartSeriesConfig(BaseModel):
+    name: Optional[str] = None
+    values: List[float] = Field(default_factory=list)
+    color: Optional[str] = None
+    line_width: int = 3
     point_radius: int = 4
 
-class ChartElementConfig(BaseModel):
-    type:   ChartType = ChartType.BAR
+
+class ChartElementConfig(LayoutElementConfig):
+    type: ChartType = ChartType.BAR
     labels: List[str] = Field(default_factory=list)
     series: List[ChartSeriesConfig] = Field(default_factory=list)
-
-    # Position & size
-    x:      Dimension = "50%"
-    y:      Dimension = "50%"
-    width:  Dimension = "82%"
+    x: Dimension = "50%"
+    y: Dimension = "50%"
+    width: Dimension = "82%"
     height: Dimension = "48%"
-    anchor: str       = "center"
-
-    # Typography
-    title:           Optional[str] = None
-    font_family:     Optional[str] = None
-    font_path:       Optional[str] = None
-    font_size:       int           = 18
-    title_font_size: int           = 26
-    label_color:     str           = "#334155"
-    title_color:     str           = "#0f172a"
-
-    # Value scale
+    anchor: str = "center"
+    title: Optional[str] = None
+    font_family: Optional[str] = None
+    font_path: Optional[str] = None
+    font_size: int = 18
+    title_font_size: int = 26
+    label_color: str = "#334155"
+    title_color: str = "#0f172a"
     min_value: Optional[float] = None
     max_value: Optional[float] = None
-    grid_steps: int            = Field(default=4, ge=1, le=12)
-
-    # Chart options
-    show_grid:   bool  = True
-    show_legend: bool  = True
-    show_points: bool  = True
-    line_width:  int   = 4
-    point_radius: int  = 4
+    grid_steps: int = Field(default=4, ge=1, le=12)
+    show_grid: bool = True
+    show_legend: bool = True
+    show_points: bool = True
+    line_width: int = 4
+    point_radius: int = 4
     bar_group_padding: float = Field(default=0.24, ge=0.0, le=0.8)
-    bar_radius:        int   = 6
-    palette: List[str] = Field(default_factory=lambda: [
-        "#0ea5e9",
-        "#2563eb",
-        "#22c55e",
-        "#f97316",
-        "#e11d48",
-        "#a855f7",
-    ])
-
-    # Colors and framing
-    background_color:       str           = "rgba(248,250,252,0.92)"
+    bar_radius: int = 6
+    palette: List[str] = Field(
+        default_factory=lambda: [
+            "#0ea5e9",
+            "#2563eb",
+            "#22c55e",
+            "#f97316",
+            "#e11d48",
+            "#a855f7",
+        ]
+    )
+    background_color: str = "rgba(248,250,252,0.92)"
     chart_background_color: Optional[str] = "rgba(255,255,255,0.75)"
-    axis_color:             str           = "#475569"
-    grid_color:             str           = "rgba(148,163,184,0.42)"
-    border_color:           str           = "rgba(148,163,184,0.72)"
-    border_width:           int           = 2
-    border_radius:          float         = 14.0
-
-    # Plot area padding
-    padding_left:   int = 72
-    padding_right:  int = 28
-    padding_top:    int = 42
+    axis_color: str = "#475569"
+    grid_color: str = "rgba(148,163,184,0.42)"
+    border_color: str = "rgba(148,163,184,0.72)"
+    border_width: int = 2
+    border_radius: float = 14.0
+    padding_left: int = 72
+    padding_right: int = 28
+    padding_top: int = 42
     padding_bottom: int = 70
-
-    # Compositing
-    opacity:    float     = Field(default=1.0, ge=0.0, le=1.0)
-    rotation:   float     = 0.0
+    opacity: float = Field(default=1.0, ge=0.0, le=1.0)
+    rotation: float = 0.0
     blend_mode: BlendMode = BlendMode.NORMAL
-    z_index:    int       = 7
-    visible:    bool      = True
-    shadow:     Optional[ShadowConfig] = None
+    z_index: int = 7
+    visible: bool = True
+    shadow: Optional[ShadowConfig] = None

@@ -1,53 +1,47 @@
-"""
-postcanvas – Generate social-media images with Python.
+"""Generate validated, responsive social-media images with Python."""
 
-Quick start
------------
-from postcanvas import generate
-from postcanvas.presets import instagram_post
-from postcanvas.models import BackgroundConfig, TextConfig, ShadowConfig
-
-post = instagram_post(
-    background=BackgroundConfig(color="#1a1a2e"),
-    texts=[
-        TextConfig(
-            content="Hello World",
-            y="45%",
-            font_size=96,
-            color="#e94560",
-            shadow=ShadowConfig(blur_radius=12),
-        )
-    ],
-    output_dir="./out",
+from . import models, presets
+from .api import RenderResult, generate, render
+from .renderer import (
+    GenerateResult,
+    image_to_bytes,
+    render_one,
+    save_image_to_path,
+)
+from .template import LayoutNode, Template, TemplateRenderResult, TemplateVariant, Theme
+from .validation import (
+    LayoutIssue,
+    LayoutReport,
+    LayoutValidationError,
+    Rect,
+    validate_post,
 )
 
-paths = generate(post)
+from . import template as _template_module
+from .layout_flow import resolve_flow_boxes as _resolve_flow_boxes
 
-Cloud storage example
---------------------
-from postcanvas import generate, image_to_bytes, GenerateResult
-from postcanvas.models import OutputFormat
+_template_module._flow_boxes = _resolve_flow_boxes
 
-# Generate images without saving to disk
-images = generate(post, save=False, return_images=True)
+__version__ = "0.3.0"
 
-# Convert to bytes and upload to cloud storage
-for img in images:
-    data = image_to_bytes(img, format=OutputFormat.PNG)
-    # s3_client.put_object(Bucket='bucket', Key='image.png', Body=data)
-
-# Get both paths and images
-result = generate(post, save=True, return_images=True)  # Returns GenerateResult
-assert isinstance(result, GenerateResult)
-paths = result.paths
-images = result.images
-"""
-
-from .renderer import generate, render_one, image_to_bytes, save_image_to_path, GenerateResult
-from . import models, presets
-
-__version__ = "0.1.0"
 __all__ = [
-    "generate", "render_one", "image_to_bytes", "save_image_to_path", "GenerateResult",
-    "models", "presets"
+    "GenerateResult",
+    "LayoutIssue",
+    "LayoutNode",
+    "LayoutReport",
+    "LayoutValidationError",
+    "Rect",
+    "RenderResult",
+    "Template",
+    "TemplateRenderResult",
+    "TemplateVariant",
+    "Theme",
+    "generate",
+    "image_to_bytes",
+    "models",
+    "presets",
+    "render",
+    "render_one",
+    "save_image_to_path",
+    "validate_post",
 ]
