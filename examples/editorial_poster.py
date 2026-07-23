@@ -35,13 +35,13 @@ post = instagram_portrait(
     shapes=[
         ShapeConfig(
             type=ShapeType.CIRCLE,
-            x="78%", y="23%", width=420, height=420,
+            x="75%", y="23%", width=360, height=360,
             anchor="center", fill_color="#FB7185", opacity=0.92,
             z_index=1,
         ),
         ShapeConfig(
             type=ShapeType.CIRCLE,
-            x="78%", y="23%", width=280, height=280,
+            x="75%", y="23%", width=240, height=240,
             anchor="center", fill_color="#FBBF24", opacity=0.58,
             z_index=2,
         ),
