@@ -55,7 +55,7 @@ post = instagram_portrait(
             z_index=3,
             texts=[
                 TextConfig(
-                    content="Explore the 1.0 documentation →",
+                    content="Explore the 1.0 documentation",
                     x="7%", y="50%", width="86%", height="60%",
                     anchor="left", font_size=32, min_font_size=22,
                     fit="shrink", color="#111827", align="left",
