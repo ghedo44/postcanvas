@@ -4,14 +4,7 @@ from typing import List, Literal, Optional, Tuple
 
 from pydantic import BaseModel, Field, model_validator
 
-from .enums import (
-    BlendMode,
-    ChartType,
-    Dimension,
-    ImageFit,
-    ShapeType,
-    TextAlign,
-)
+from .enums import BlendMode, ChartType, Dimension, ImageFit, ShapeType, TextAlign
 from .primitives import BorderConfig, FilterConfig, GradientConfig, ShadowConfig
 from .text import TextConfig
 
@@ -22,20 +15,21 @@ class LayoutElementConfig(BaseModel):
     id: Optional[str] = None
     collision_group: Optional[str] = None
     allow_overlap_with: List[str] = Field(default_factory=list)
+    respect_safe_area: bool = True
+    respect_exclusion_zones: bool = True
 
 
 class ImageElementConfig(LayoutElementConfig):
     src: str
-
     x: Dimension = "50%"
     y: Dimension = "50%"
     width: Optional[Dimension] = None
     height: Optional[Dimension] = None
     fit: ImageFit = ImageFit.CONTAIN
     anchor: str = "center"
+    focal_mode: Literal["manual", "auto"] = "manual"
     focal_x: float = Field(default=0.5, ge=0.0, le=1.0)
     focal_y: float = Field(default=0.5, ge=0.0, le=1.0)
-
     border_radius: float = 0.0
     opacity: float = Field(default=1.0, ge=0.0, le=1.0)
     rotation: float = 0.0
@@ -54,6 +48,8 @@ class ImageElementConfig(LayoutElementConfig):
 
 
 class ShapeConfig(LayoutElementConfig):
+    respect_safe_area: bool = False
+    respect_exclusion_zones: bool = False
     type: ShapeType = ShapeType.RECTANGLE
     x: Dimension = 0
     y: Dimension = 0

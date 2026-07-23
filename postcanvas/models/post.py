@@ -6,14 +6,9 @@ from pydantic import BaseModel, Field
 
 from .background import BackgroundConfig
 from .canvas import CanvasConfig
-from .elements import (
-    ChartElementConfig,
-    ImageElementConfig,
-    ShapeConfig,
-    TableElementConfig,
-)
+from .elements import ChartElementConfig, ImageElementConfig, ShapeConfig, TableElementConfig
 from .enums import OutputFormat, Platform, PostFormat
-from .layout import LayoutPolicyConfig
+from .layout import ExclusionZone, LayoutPolicyConfig
 from .meta import MetaConfig
 from .primitives import FilterConfig, PaddingConfig
 from .text import TextConfig
@@ -25,11 +20,14 @@ class PostConfig(BaseModel):
 
     platform: Platform = Platform.INSTAGRAM
     format: PostFormat = PostFormat.SQUARE
+    profile_name: Optional[str] = None
     width: int = Field(default=1080, gt=0)
     height: int = Field(default=1080, gt=0)
     background: BackgroundConfig = Field(default_factory=BackgroundConfig)
     padding: PaddingConfig = Field(default_factory=PaddingConfig)
     safe_area: Optional[PaddingConfig] = None
+    exclusion_zones: List[ExclusionZone] = Field(default_factory=list)
+    max_file_size_bytes: Optional[int] = Field(default=None, gt=0)
     layout_policy: LayoutPolicyConfig = Field(default_factory=LayoutPolicyConfig)
     text_font_family: Optional[str] = None
     text_font_path: Optional[str] = None
