@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img">
+<defs></defs>
+
+<rect width="1080" height="1350" rx="42" fill="#f5efe6"/>
+<rect x="52" y="52" width="976" height="1246" rx="32" fill="#10131b"/>
+<circle cx="827" cy="284" r="250" fill="#fb7185"/>
+<circle cx="827" cy="284" r="180" fill="#fbbf24" opacity=".55"/>
+<path d="M0 940 C260 760 410 1070 660 910 S950 810 1080 980 L1080 1350 L0 1350Z" fill="#7c3aed" opacity=".78"/>
+<text x="108" y="150" font-family="Inter,Arial,sans-serif" font-size="25" fill="#f8fafc" letter-spacing="4">POSTCANVAS / EDITORIAL</text>
+<text x="108" y="550" font-family="Inter,Arial,sans-serif" font-size="104" fill="#fff" font-weight="900">DESIGN</text>
+<text x="108" y="655" font-family="Inter,Arial,sans-serif" font-size="104" fill="#fff" font-weight="900">THAT</text>
+<text x="108" y="760" font-family="Inter,Arial,sans-serif" font-size="104" fill="#fff" font-weight="900">ADAPTS.</text>
+<rect x="108" y="806" width="330" height="14" rx="7" fill="#22d3ee"/>
+<text x="108" y="1160" font-family="Inter,Arial,sans-serif" font-size="29" fill="#e2e8f0">Responsive typography</text>
+<text x="108" y="1202" font-family="Inter,Arial,sans-serif" font-size="29" fill="#e2e8f0">Safe-area aware composition</text>
+<text x="108" y="1244" font-family="Inter,Arial,sans-serif" font-size="29" fill="#e2e8f0">Production validation</text>
+
+</svg>
