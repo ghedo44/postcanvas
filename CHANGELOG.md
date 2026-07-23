@@ -2,6 +2,16 @@
 
 All notable changes to Postcanvas are documented here.
 
+## 1.0.1
+
+### Compatibility and release automation
+
+- Added tested support for Python 3.14 while retaining Python 3.10, 3.11, 3.12, and 3.13.
+- Added Python-version classifiers for every supported stable interpreter.
+- Moved linting, documentation validation, distribution builds, and wheel smoke tests to Python 3.14.
+- Kept the release gate across the complete Python 3.10–3.14 matrix.
+- Added one-time post-release branch cleanup so the repository retains only `main`.
+
 ## 1.0.0
 
 ### Documentation and examples
