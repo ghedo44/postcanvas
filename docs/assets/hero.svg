@@ -25,13 +25,13 @@
 <circle cx="220" cy="120" r="180" fill="#7c3aed" opacity=".16" filter="url(#soft)"/>
 <circle cx="1210" cy="590" r="210" fill="#06b6d4" opacity=".14" filter="url(#soft)"/>
 <g transform="translate(86 98)">
-  <rect x="0" y="0" width="134" height="40" rx="20" fill="#ffffff" opacity=".09"/>
-  <text x="22" y="27" font-family="Inter,Arial,sans-serif" font-size="17" fill="#d8b4fe" font-weight="700">POSTCANVAS 1.0</text>
+  <rect x="0" y="0" width="194" height="40" rx="20" fill="#ffffff" opacity=".09"/>
+  <text x="97" y="27" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="17" fill="#d8b4fe" font-weight="700">POSTCANVAS 1.0</text>
   <text x="0" y="112" font-family="Inter,Arial,sans-serif" font-size="72" fill="#ffffff" font-weight="800">Social graphics,</text>
   <text x="0" y="192" font-family="Inter,Arial,sans-serif" font-size="72" fill="#ffffff" font-weight="800">built like software.</text>
   <text x="2" y="245" font-family="Inter,Arial,sans-serif" font-size="25" fill="#b8c0d9">Responsive layouts · validation · templates · charts · rich text</text>
-  <rect x="0" y="292" width="230" height="62" rx="18" fill="url(#violet)"/>
-  <text x="35" y="332" font-family="Inter,Arial,sans-serif" font-size="22" fill="#fff" font-weight="700">pip install postcanvas</text>
+  <rect x="0" y="292" width="310" height="62" rx="18" fill="url(#violet)"/>
+  <text x="155" y="332" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" fill="#fff" font-weight="700">pip install postcanvas</text>
   <g transform="translate(0 406)">
     <rect width="472" height="142" rx="24" fill="#ffffff" opacity=".055" stroke="#ffffff" stroke-opacity=".11"/>
     <text x="28" y="38" font-family="ui-monospace,monospace" font-size="17" fill="#a5f3fc">post = instagram_portrait(</text>
