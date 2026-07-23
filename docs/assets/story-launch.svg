@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" role="img">
+<defs></defs>
+
+<rect width="1080" height="1920" rx="52" fill="#0a0d18"/>
+<circle cx="768" cy="384" r="420" fill="#7c3aed"/>
+<circle cx="768" cy="384" r="292" fill="#ec4899" opacity=".65"/>
+<circle cx="768" cy="384" r="176" fill="#fbbf24" opacity=".82"/>
+<path d="M-50 1300 C240 1070 560 1490 1130 1120 L1130 1980 L-50 1980Z" fill="#0ea5e9" opacity=".2"/>
+<text x="88" y="150" font-family="Inter,Arial,sans-serif" font-size="24" fill="#c4b5fd" letter-spacing="5">LAUNCH / 09.24</text>
+<text x="88" y="760" font-family="Inter,Arial,sans-serif" font-size="106" fill="#fff" font-weight="900">THE NEXT</text>
+<text x="88" y="872" font-family="Inter,Arial,sans-serif" font-size="106" fill="#fff" font-weight="900">CHAPTER</text>
+<text x="88" y="984" font-family="Inter,Arial,sans-serif" font-size="106" fill="#fff" font-weight="900">STARTS.</text>
+<text x="88" y="1080" font-family="Inter,Arial,sans-serif" font-size="32" fill="#cbd5e1">Designed once. Adapted everywhere.</text>
+<rect x="88" y="1470" width="904" height="174" rx="38" fill="#fff"/>
+<text x="140" y="1544" font-family="Inter,Arial,sans-serif" font-size="22" fill="#64748b">EARLY ACCESS</text>
+<text x="140" y="1602" font-family="Inter,Arial,sans-serif" font-size="42" fill="#111827" font-weight="800">postcanvas.dev / join</text>
+<rect x="88" y="1760" width="904" height="16" rx="8" fill="#fff" opacity=".14"/>
+<rect x="88" y="1760" width="610" height="16" rx="8" fill="#f472b6"/>
+
+</svg>
