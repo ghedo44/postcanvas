@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - "feature/**"
+      - "hotfix/**"
   workflow_dispatch:
 
 permissions:
@@ -68,47 +69,3 @@ jobs:
           name: python-package-distributions
           path: dist/
           if-no-files-found: error
-
-  publish:
-    needs: [lint, test, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - uses: actions/download-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
-      - name: Check whether version already exists
-        id: version
-        shell: bash
-        run: |
-          python - <<'PY' >> "$GITHUB_OUTPUT"
-          import tomllib
-          import urllib.error
-          import urllib.request
-
-          with open("pyproject.toml", "rb") as file:
-              version = tomllib.load(file)["project"]["version"]
-          url = f"https://pypi.org/pypi/postcanvas/{version}/json"
-          try:
-              urllib.request.urlopen(url, timeout=15)
-          except urllib.error.HTTPError as error:
-              if error.code != 404:
-                  raise
-              print("publish=true")
-          else:
-              print("publish=false")
-          print(f"version={version}")
-          PY
-      - name: Publish to PyPI
-        if: steps.version.outputs.publish == 'true'
-        uses: pypa/gh-action-pypi-publish@release/v1
