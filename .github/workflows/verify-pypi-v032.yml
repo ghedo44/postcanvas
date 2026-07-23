@@ -1,0 +1,32 @@
+name: verify-pypi-v032
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.head_ref == 'release/v0.3.2-publish'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify exact PyPI release metadata
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          version = "0.3.2"
+          url = f"https://pypi.org/pypi/postcanvas/{version}/json"
+          with urllib.request.urlopen(url, timeout=30) as response:
+              payload = json.load(response)
+          actual = payload["info"]["version"]
+          files = sorted(file["filename"] for file in payload["urls"])
+          assert actual == version, (actual, version)
+          assert any(name.endswith(".whl") for name in files), files
+          assert any(name.endswith(".tar.gz") for name in files), files
+          print(f"verified postcanvas {actual}")
+          print("files:", ", ".join(files))
+          PY
